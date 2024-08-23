@@ -1,0 +1,35 @@
+<ng-container *ngrxLet="isDarkMode$ as darkMode">
+    <div class="auth-container">
+        <mat-sidenav-container class="sidenav-container">
+            <mat-sidenav-content>
+                <main>
+                    <mat-card class="container-card bg-container" appearance="outlined">
+                        <div class="card-top">
+                            <div>
+                                @if (!signInRoute) {
+                                    <a mat-button [routerLink]="'../'">
+                                        <mat-icon> arrow_back</mat-icon>
+                                        Voltar
+                                    </a>
+                                }
+                            </div>
+                            <div>
+                                <button mat-icon-button
+                                        (click)="changeThemeMode(darkMode)">
+                                    <mat-icon> {{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-card-header>
+                            <mat-card-title>
+                                <h1 class="brand">The Gallery</h1>
+                            </mat-card-title>
+                        </mat-card-header>
+                        <router-outlet></router-outlet>
+                    </mat-card>
+                </main>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
+    </div>
+</ng-container>
+

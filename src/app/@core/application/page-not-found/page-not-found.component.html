@@ -1,0 +1,33 @@
+<ng-container *ngrxLet="isDarkMode$ as darkMode">
+    <div class="not-found-container">
+        <mat-sidenav-container class="sidenav-container">
+            <mat-sidenav-content>
+                <main>
+                    <mat-card class="container-card bg-container" appearance="outlined">
+                        <div class="card-top">
+                            <div></div>
+                            <div>
+                                <button mat-icon-button
+                                        (click)="changeThemeMode(darkMode)">
+                                    <mat-icon> {{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-card-header>
+                            <mat-card-title>
+                                <h1 class="brand">The Gallery</h1>
+                            </mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <h3>Rota não encontrada</h3>
+                            <p>Desculpe, a rota que você procura não existe.</p>
+                        </mat-card-content>
+                        <mat-card-footer>
+                            <button mat-button>Ir para o login</button>
+                        </mat-card-footer>
+                    </mat-card>
+                </main>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
+    </div>
+</ng-container>

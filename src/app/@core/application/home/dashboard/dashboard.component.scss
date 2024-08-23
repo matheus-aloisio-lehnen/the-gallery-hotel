@@ -1,0 +1,28 @@
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-card {
+    padding: 1rem 2rem 1rem 2rem;
+
+    .details-card-body {
+        .mat-mdc-form-field {
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        .mat-divider {
+            margin: 2.5rem 0;
+        }
+    }
+    .details-card-action {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+}

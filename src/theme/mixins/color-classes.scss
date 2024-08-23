@@ -1,0 +1,293 @@
+@use '@angular/material' as mat;
+@use 'sass:map';
+
+@mixin color-classes($theme) {
+    $type: mat.get-theme-type($theme);
+
+    //Chaves  possiveis de cores
+    // "background, error, error-container, inverse-on-surface, inverse-primary, inverse-surface, on-background, on-error, on-error-container, on-primary,
+    // on-primary-container, on-primary-fixed, on-primary-fixed-variant, on-secondary, on-secondary-container, on-secondary-fixed,
+    // on-secondary-fixed-variant, on-surface, on-surface-variant, on-tertiary, on-tertiary-container, on-tertiary-fixed, on-tertiary-fixed-variant,
+    // outline, outline-variant, primary, primary-container, primary-fixed, primary-fixed-dim, scrim, secondary, secondary-container, secondary-fixed,
+    // secondary-fixed-dim, shadow, surface, surface-bright, surface-container, surface-container-high, surface-container-highest,
+    // surface-container-low, surface-container-lowest, surface-dim, surface-tint, surface-variant, tertiary, tertiary-container, tertiary-fixed,
+    // tertiary-fixed-dim"
+
+
+    $background-body: mat.get-theme-color($theme, background);
+    $text: mat.get-theme-color($theme, inverse-surface);
+
+    $light-primary: mat.get-theme-color($theme, primary-container);
+    $error: mat.get-theme-color($theme, error);
+    $on-error: mat.get-theme-color($theme, on-error);
+    $error-container: mat.get-theme-color($theme, error-container);
+
+    $primary: mat.get-theme-color($theme, primary);
+    $secondary: mat.get-theme-color($theme, secondary);
+    $tertiary: mat.get-theme-color($theme, tertiary);
+    $info: map-get(mat.$azure-palette, 30);
+    $warning: #ffc107;
+    $active: mat.get-theme-color($theme, tertiary);
+    $danger: mat.get-theme-color($theme, error);
+    $gray: mat.get-theme-color($theme, outline);
+    $empty: mat.get-theme-color($theme, outline-variant);
+
+    $pastel-primary: #B3C6FF;
+    $pastel-secondary: #F6C6C6;
+    $pastel-success: #C6F6C6;
+    $pastel-info: #D1E7F5;
+    $pastel-warning: #F8D7A4;
+    $pastel-danger: #F5C6C6;
+
+    $blue: #007bff;
+    $green: #28a745;
+    $red: #dc3545;
+    $orange: #ffc107;
+    $light-blue: #17a2b8;
+
+    @if($type == 'dark') {
+        $info: map-get(mat.$azure-palette, 70);
+        $warning: mat.get-theme-color($theme, primary-fixed-dim);
+    }
+
+    .text-primary {
+        color: $primary !important;
+    }
+
+    .text-secondary {
+        color: $secondary !important;
+    }
+
+    .text-success {
+        color: $tertiary !important;
+    }
+
+    .text-info {
+        color: $info !important;
+    }
+
+    .text-warning {
+        color: $warning !important;
+    }
+
+    .text-danger {
+        color: $danger !important;
+    }
+
+    .text-empty {
+        color: $empty;
+    }
+
+    .text-gray {
+        color: $gray;
+    }
+
+    .text-white {
+        color: #ffffff;
+    }
+
+    .text-black {
+        color: #000000;
+    }
+
+    .text-light-primary {
+        color: $pastel-primary !important;
+    }
+
+    .text-light-secondary {
+        color: $pastel-secondary !important;
+    }
+
+    .text-light-success {
+        color: $pastel-success !important;
+    }
+
+    .text-light-info {
+        color: $pastel-info !important;
+    }
+
+    .text-light-warning {
+        color: $pastel-warning !important;
+    }
+
+    .text-light-danger {
+        color: $pastel-danger !important;
+    }
+
+    .bg-primary {
+        background-color: $primary !important;
+    }
+
+    .bg-secondary {
+        background-color: $secondary !important;
+    }
+
+    .bg-success {
+        background-color: $tertiary !important;
+    }
+
+    .bg-info {
+        background-color: $info !important;
+    }
+
+    .bg-warning {
+        background-color: $warning !important;
+    }
+
+    .bg-danger {
+        background-color: $danger !important;
+    }
+
+    .bg-empty {
+        background-color: $empty !important;
+    }
+
+    .bg-gray {
+        background-color: $gray;
+    }
+
+    .bg-light-primary {
+        background-color: $pastel-primary !important;
+        color: #000;
+    }
+
+    .bg-light-secondary {
+        background-color: $pastel-secondary !important;
+        color: #000;
+    }
+
+    .bg-light-success {
+        background-color: $pastel-success !important;
+        color: #000;
+    }
+
+    .bg-light-info {
+        background-color: $pastel-info !important;
+        color: #000;
+    }
+
+    .bg-light-warning {
+        background-color: $pastel-warning !important;
+        color: #000;
+    }
+
+    .bg-light-danger {
+        background-color: $pastel-danger !important;
+        color: #000;
+    }
+
+    .border-primary {
+        border: 1px solid #0d6efd;
+    }
+    .border-secondary {
+        border: 1px solid #6c757d;
+    }
+    .border-success {
+        border: 1px solid #198754;
+    }
+    .border-danger {
+        border: 1px solid #dc3545;
+    }
+    .border-warning {
+        border: 1px solid #ffc107;
+    }
+    .border-info {
+        border: 1px solid #0dcaf0;
+    }
+    .border-light {
+        border: 1px solid #f8f9fa;
+    }
+    .border-dark {
+        border: 1px solid #212529;
+    }
+
+    .hover:hover {
+        background: $empty;
+        transition: 0.1s;
+    }
+
+    .active {
+        background-color: $active !important;
+    }
+
+    .disabled {
+        opacity: 0.4;
+    }
+
+    .text-blue {
+        color: $blue !important;
+    }
+    .text-green {
+        color: $green !important;
+    }
+    .text-red {
+        color: $red !important;
+    }
+    .text-orange {
+        color: $orange !important;
+    }
+    .text-light-blue {
+        color: $light-blue !important;
+    }
+
+    .bg-blue {
+        background-color: $blue !important;
+    }
+    .bg-green {
+        background-color: $green !important;
+    }
+    .bg-red {
+        background-color: $red !important;
+    }
+    .bg-orange {
+        background-color: $orange !important;
+    }
+    .bg-light-blue {
+        background-color: $light-blue !important;
+    }
+
+    .snackbar-success {
+        @if($type == 'dark') {
+            --mdc-snackbar-container-color: #58dbc3 !important;
+        } @else {
+            --mdc-snackbar-container-color: #006c45 !important;
+        }
+    }
+
+    .snackbar-warning {
+        @if($type == 'dark') {
+            --mdc-snackbar-container-color: #ffb74d !important;
+        } @else {
+            --mdc-snackbar-container-color: #f57c00 !important;
+        }
+    }
+
+    .snackbar-error {
+        @if($type == 'dark') {
+            --mdc-snackbar-container-color: #ff5449 !important;
+        } @else {
+            --mdc-snackbar-container-color: #ba1a1a !important;
+        }
+    }
+
+    .bg-container {
+        background-color: $light-primary !important;
+    }
+
+    ::-webkit-scrollbar {
+        width: 9px;
+        height: 9px;
+    }
+    ::-webkit-scrollbar-track {
+        background: $empty;
+        border-radius: 1rem;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: $blue;
+        border-radius: 1rem;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: $primary;
+    }
+
+}

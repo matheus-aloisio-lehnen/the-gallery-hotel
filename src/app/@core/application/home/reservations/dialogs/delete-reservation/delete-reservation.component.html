@@ -1,0 +1,30 @@
+<mat-toolbar class="dialog-title">
+    <h2 mat-dialog-title> Cancelar reserva </h2>
+    <button mat-icon-button
+            [mat-dialog-close]="false">
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-toolbar>
+
+<mat-divider></mat-divider>
+<mat-dialog-content>
+    <div class="dialog-content">
+        <p>Tem certeza que deseja cancelar esta reserva?</p>
+        <mat-card appearance="outlined">
+            <mat-card-header>
+                <mat-card-title> Quarto {{ reservation.roomNumber }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p>Hóspede: {{ reservation.guest.personalData?.name }}</p>
+                <p>Data de entrada: {{ reservation.startDate }}</p>
+                <p>Data de saída: {{ reservation.endDate }}</p>
+                <p>Status de pagamento: {{ reservation.paymentStatus | titlecase }}</p>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</mat-dialog-content>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="false">Cancelar</button>
+    <button mat-stroked-button (click)="delete()">Confimar</button>
+</mat-dialog-actions>

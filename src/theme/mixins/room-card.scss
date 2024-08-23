@@ -1,0 +1,34 @@
+@use '@angular/material' as mat;
+
+
+@mixin room-card($theme) {
+
+    $type: mat.get-theme-type($theme);
+    $empty: mat.get-theme-color($theme, inverse-on-surface);
+    $gray: mat.get-theme-color($theme, outline);
+    $empty: mat.get-theme-color($theme, outline-variant);
+    $primary: mat.get-theme-color($theme, primary);
+    $success: mat.get-theme-color($theme, tertiary);
+    .room-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 2rem;
+        cursor: pointer;
+        padding: 1rem;
+        background: transparent;
+        border: unset;
+
+        .mat-icon {
+            font-size: 5rem;
+            width: 5rem;
+            height: 5rem;
+            margin: 0;
+        }
+        h4 {
+            margin: 0;
+        }
+        @extend .hover;
+    }
+}

@@ -1,0 +1,22 @@
+.full:not(:first-child) {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.rooms {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.room-details {
+    padding: 1rem;
+    .mat-mdc-card-header {
+        margin-bottom: 1.5rem;
+    }
+    .mat-mdc-card-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+}

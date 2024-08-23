@@ -1,1 +1,58 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use 'theme/light';
+@use 'theme/dark';
+@use 'theme/mixins/utils';
+@include mat.core();
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Varela Round', sans-serif;
+}
+
+html {
+    --mdc-outlined-card-container-shape: 2rem !important;
+    --mdc-elevated-card-container-shape: 2rem !important;
+    --mat-stepper-header-hover-state-layer-shape: 2rem !important;
+    --mat-stepper-header-focus-state-layer-shape: 2rem !important;
+    .container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: auto auto auto;
+        gap: 10px;
+        padding: 0 2rem;
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 500;
+        }
+        .full {
+            grid-column: span 8;
+        }
+        .more-than-half {
+            grid-column: span 6;
+        }
+        .half {
+            grid-column: span 4;
+        }
+        .quarter {
+            grid-column: span 2;
+        }
+        .eight {
+            grid-column: span 1;
+        }
+    }
+    .brand {
+        font-family: 'Pacifico', sans-serif !important;
+    }
+    @include mat.all-component-themes(light.$theme);
+    @include utils.mixins(light.$theme);
+}
+
+.dark-theme {
+    @include mat.all-component-colors(dark.$theme);
+    @include utils.mixins(dark.$theme);
+}

@@ -1,0 +1,22 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+$typography: (
+        plain-family: 'Varela Round, sans serif',
+        brand-family: 'Varela Round, sans serif',
+        bold-weight: 900,
+        medium-weight: 600,
+        regular-weight: 400,
+);
+$density: (scale: 0);
+
+
+$theme: mat.define-theme((
+        color: (
+                theme-type: light,
+                primary: mat.$azure-palette,
+                tertiary: mat.$blue-palette
+        ),
+        typography: $typography,
+        density: $density
+));

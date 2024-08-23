@@ -1,0 +1,17 @@
+export enum Icon {
+    linkedin = 'linkedin',
+    github = 'github',
+    youtube = 'youtube',
+    facebook = 'facebook',
+    instagram = 'instagram',
+    whatsapp = 'whatsapp',
+    pdf = 'pdf',
+    excel = 'excel',
+    csv = 'csv',
+    edit = 'edit',
+    trash = 'trash',
+    dashboard = 'dashboard',
+    rooms = 'meeting_room',
+    reservation = 'event',
+    cashFlow = 'payments',
+}

@@ -1,0 +1,9 @@
+form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+
+    .mat-mdc-form-field {
+        margin: .5rem 0;
+    }
+}

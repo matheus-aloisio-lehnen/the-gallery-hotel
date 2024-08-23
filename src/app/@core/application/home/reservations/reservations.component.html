@@ -1,0 +1,72 @@
+<!--<ng-container *ngrxLet="roomList$ as roomList">-->
+<!--    <ng-container *ngrxLet="selectedRoom$ as room">-->
+<!--        <ng-container *ngrxLet="selectedReservation$ as reservation">-->
+<!--            <div class="container">-->
+<!--                <div class="full">-->
+<!--                    <h3>Reservas</h3>-->
+<!--                </div>-->
+<!--                <mat-tab-group [(selectedIndex)]="selectedMonth" (selectedIndexChange)="onTabChange()" class="full"-->
+<!--                               mat-stretch-tabs="false" mat-align-tabs="center">-->
+<!--                    @for (month of months; track month.id) {-->
+<!--                        <mat-tab [label]="month.name">-->
+<!--                            <ng-template matTabContent>-->
+
+<!--                                <div class="custom-card">-->
+<!--                                    <table mat-table [dataSource]="roomList">-->
+<!--                                        @for (column of displayedColumns; track column) {-->
+<!--                                            <ng-container [matColumnDef]="column">-->
+<!--                                                <th mat-header-cell *matHeaderCellDef-->
+<!--                                                    [class.text-primary]="today == column"-->
+<!--                                                    [style.text-align]="'center'"> {{ column === 'room' ? 'Quarto' : column }} </th>-->
+<!--                                                <td mat-cell *matCellDef="let element"-->
+<!--                                                    [style.background-color]="hasReservation(column, element) ? getColor(column, element) : 'transparent'"-->
+<!--                                                    [class.text-black]="column !== 'room'"-->
+<!--                                                    [class.start-date]="isStartDate(column, element)"-->
+<!--                                                    [class.end-date]="isEndDate(column, element)"-->
+<!--                                                    [class.has-reservation]="hasReservation(column, element)"-->
+<!--                                                    (click)="showDetails(column, element)"> {{ getTableText(column, element) }} </td>-->
+<!--                                            </ng-container>-->
+<!--                                        }-->
+<!--                                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+<!--                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>-->
+<!--                                    </table>-->
+<!--                                </div>-->
+<!--                            </ng-template>-->
+<!--                        </mat-tab>-->
+<!--                    }-->
+<!--                </mat-tab-group>-->
+<!--                <div class="full">-->
+<!--                    @if (room && !reservation) {-->
+<!--                        <button mat-stroked-button (click)="add()">-->
+<!--                            <mat-icon>add</mat-icon>-->
+<!--                            Adicionar uma reserva-->
+<!--                        </button>-->
+<!--                    } @else if (reservation) {-->
+<!--                        <mat-card appearance="outlined">-->
+<!--                            <mat-card-header>-->
+<!--                                <mat-card-title> Informações de reserva</mat-card-title>-->
+<!--                                <mat-card-subtitle>Quarto {{ reservation.roomNumber }}</mat-card-subtitle>-->
+<!--                            </mat-card-header>-->
+<!--                            <mat-card-content>-->
+<!--                                <p>Hóspede: {{ reservation.guest.personalData?.name }}</p>-->
+<!--                                <p>Data de entrada: {{ reservation.startDate | date: 'dd-MM-yyyy' }}</p>-->
+<!--                                <p>Data de saída: {{ reservation.endDate | date: 'dd-MM-yyyy' }}</p>-->
+<!--                                <p>Status de pagamento: {{ reservation.paymentStatus | titlecase }}</p>-->
+<!--                            </mat-card-content>-->
+<!--                            <mat-card-actions align="end">-->
+<!--                                <button mat-stroked-button (click)="edit(reservation)">-->
+<!--                                    <mat-icon>edit</mat-icon>-->
+<!--                                    Editar-->
+<!--                                </button>-->
+<!--                                <button mat-button class="text-danger" (click)="delete(reservation)">-->
+<!--                                    <mat-icon>delete</mat-icon>-->
+<!--                                    Excluir-->
+<!--                                </button>-->
+<!--                            </mat-card-actions>-->
+<!--                        </mat-card>-->
+<!--                    }-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </ng-container>-->
+<!--    </ng-container>-->
+<!--</ng-container>-->

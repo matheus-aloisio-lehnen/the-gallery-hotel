@@ -1,0 +1,34 @@
+.custom-card {
+    border-radius: 2rem;
+    padding: 1rem;
+    background-color: var(--mat-table-background-color);
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    .mat-mdc-table {
+        overflow-x: hidden;
+    }
+}
+
+.full:not(:first-child) {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.start-date {
+    border-top-left-radius: 3rem;
+    border-bottom-left-radius: 3rem;
+}
+
+.end-date {
+    border-top-right-radius: 3rem;
+    border-bottom-right-radius: 3rem;
+}
+
+.has-reservation {
+    cursor: pointer !important;
+}
+
+.has-reservation:hover {
+    opacity: 1;
+}

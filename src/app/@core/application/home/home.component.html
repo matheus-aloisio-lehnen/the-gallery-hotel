@@ -1,0 +1,62 @@
+<ng-container *ngrxLet="isDarkMode$ as darkMode">
+    <div class="home-container">
+        <mat-toolbar class="header">
+            <div>
+                <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+            </div>
+            <div>
+                <h4 class="brand">The Gallery</h4>
+            </div>
+            <div>
+                <button mat-icon-button (click)="configService.changeThemeMode(darkMode)">
+                    <mat-icon> {{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                </button>
+                <button mat-icon-button (click)="logout()">
+                    <mat-icon> logout </mat-icon>
+                </button>
+            </div>
+        </mat-toolbar>
+
+        <mat-sidenav-container class="sidenav-container bg-container" (backdropClick)="snav.close()">
+            <mat-sidenav #snav
+                         [mode]="'push'"
+                         [fixedInViewport]="true"
+                         [fixedTopGap]="64"
+                         [fixedBottomGap]="100"
+                         (keydown.escape)="snav.close()">
+                <div>
+                    <img [ngSrc]="'/assets/logo/logo.webp'" alt="Logo do Hotel" width="125" height="125">
+                </div>
+                <mat-divider></mat-divider>
+                <mat-nav-list>
+                    @for (nav of sidenav; track nav.title) {
+                        <a mat-list-item [routerLink]="nav.link" >
+                            <mat-icon>{{ nav.icon }}</mat-icon>
+                            <span class="text"> {{ nav.title }} </span>
+                        </a>
+                    }
+                </mat-nav-list>
+            </mat-sidenav>
+
+            <mat-sidenav-content>
+                <main>
+                    <router-outlet></router-outlet>
+                </main>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
+        <mat-toolbar class="footer">
+            <div>
+                <p>© Developed by Matheus Lehnen </p>
+            </div>
+            <div>
+                <a mat-icon-button [href]="'https://www.linkedin.com/in/matheus-lehnen/'" [target]="'_blank'" [matTooltip]="'Visit my LinkedIn profile'">
+                    <mat-icon [svgIcon]="'linkedin'"></mat-icon>
+                </a>
+                <a mat-icon-button [href]="'https://github.com/matheus-aloisio-lehnen'" [target]="'_blank'" [matTooltip]="'Check out my GitHub profile'">
+                    <mat-icon [svgIcon]="'github'"></mat-icon>
+                </a>
+            </div>
+            <div></div>
+        </mat-toolbar>
+    </div>
+</ng-container>

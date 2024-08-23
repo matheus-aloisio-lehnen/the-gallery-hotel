@@ -1,0 +1,125 @@
+<ng-container *ngrxLet="room$ as room">
+    <mat-toolbar class="dialog-title">
+        <h2 mat-dialog-title> Adiciona reserva </h2>
+        <button mat-icon-button
+                [mat-dialog-close]="false">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-toolbar>
+
+    <mat-divider></mat-divider>
+    <mat-dialog-content>
+        <div class="dialog-content">
+            <div class="reservation-title">
+                <p>Quarto: {{ room?.number }}</p>
+            </div>
+            <mat-horizontal-stepper [headerPosition]="'top'" [labelPosition]="'bottom'">
+                <mat-step [stepControl]="reservationForm">
+                    <form [formGroup]="reservationForm">
+                        <ng-template matStepLabel>Dados da reserva</ng-template>
+                        <mat-form-field>
+                            <mat-label>Qual a data da estadia?</mat-label>
+                            <mat-date-range-input [rangePicker]="picker" [min]="today">
+                                <input matStartDate formControlName="startDate" placeholder="Data de entrada"
+                                       (dateChange)="onStartDateChange()">
+                                <input matEndDate formControlName="endDate" placeholder="Data de saída">
+                            </mat-date-range-input>
+                            <mat-hint>DD/MM/YYYY – DD/MM/YYYY</mat-hint>
+                            <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                        </mat-form-field>
+                        <div class="stepper-btns">
+                            <button mat-button matStepperNext>Próximo</button>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step [stepControl]="personalDataForm">
+                    <form [formGroup]="personalDataForm">
+                        <ng-template matStepLabel>Dados pessoais</ng-template>
+                        <mat-form-field>
+                            <mat-label>Nome</mat-label>
+                            <mat-icon matIconPrefix>person</mat-icon>
+                            <input matInput [formControlName]="'name'">
+                            @if (name?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(name) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Número do documento</mat-label>
+                            <mat-icon matIconPrefix>badge</mat-icon>
+                            <input matInput [formControlName]="'documentNumber'" [mask]="CPF_MASK">
+                            @if (documentNumber?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(documentNumber) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Celular</mat-label>
+                            <mat-icon matIconPrefix>smartphone</mat-icon>
+                            <input matInput [formControlName]="'mobile'" [mask]="MOBILE_MASK">
+                            @if (mobile?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(mobile) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <div class="stepper-btns">
+                            <button mat-button matStepperPrevious>Anterior</button>
+                            <button mat-button matStepperNext>Próximo</button>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step [stepControl]="addressForm">
+                    <form [formGroup]="addressForm">
+                        <ng-template matStepLabel>Endereço</ng-template>
+                        <mat-form-field>
+                            <mat-label>Cep</mat-label>
+                            <mat-icon matIconPrefix>location_on</mat-icon>
+                            <input matInput [formControlName]="'zipCode'" [mask]="ZIPCODE_MASK">
+                            @if (zipCode?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(zipCode) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Rua</mat-label>
+                            <mat-icon matIconPrefix>signpost</mat-icon>
+                            <input matInput [formControlName]="'street'">
+                            @if (street?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(street) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Número</mat-label>
+                            <mat-icon matIconPrefix>numbers</mat-icon>
+                            <input matInput [formControlName]="'number'">
+                            @if (number?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(number) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Cidade</mat-label>
+                            <mat-icon matIconPrefix>location_city</mat-icon>
+                            <input matInput [formControlName]="'city'">
+                            @if (city?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(city) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>UF</mat-label>
+                            <mat-icon matIconPrefix>approval</mat-icon>
+                            <input matInput [formControlName]="'uf'">
+                            @if (uf?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(uf) }}</mat-error>
+                            }
+                        </mat-form-field>
+                        <div class="stepper-btns">
+                            <button mat-button matStepperPrevious>Anterior</button>
+                        </div>
+                    </form>
+                </mat-step>
+            </mat-horizontal-stepper>
+        </div>
+    </mat-dialog-content>
+    <mat-divider></mat-divider>
+    <mat-dialog-actions>
+        <button mat-button [mat-dialog-close]="false">Cancelar</button>
+        <button mat-stroked-button (click)="add(room)">Confimar</button>
+    </mat-dialog-actions>
+</ng-container>
