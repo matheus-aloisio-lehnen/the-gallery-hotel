@@ -1,0 +1,49 @@
+.card {
+    .head {
+        padding: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        div:last-child {
+            justify-self: flex-end;
+        }
+    }
+
+    form {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        .mat-mdc-form-field {
+            width: auto;
+        }
+    }
+    .stepper-buttons {
+        margin: 1rem 0;
+    }
+    .mat-column-actions {
+        max-width: 20%;
+        gap: 10px;
+    }
+
+    .mdc-data-table__header-cell,
+    .mdc-data-table__cell, {
+        display: flex;
+        text-align: center;
+        justify-content: center;
+    }
+    .add-staff-actions {
+        display: flex;
+        flex-direction: column;
+        padding: 0 3rem;
+
+        button,
+        a {
+            margin: 1.5rem 0;
+        }
+    }
+
+    .mat-mdc-progress-spinner {
+        margin: 1rem auto;
+    }
+}

@@ -6,7 +6,7 @@ export const SIDENAV: Sidenav[] = [
     {
         title: 'Dashboard',
         icon: Icon.dashboard,
-        link: RouteList.dashboard
+        link: RouteList.dash
     },
     {
         title: 'Quartos',
@@ -17,5 +17,10 @@ export const SIDENAV: Sidenav[] = [
         title: 'Reservas',
         icon: Icon.reservation,
         link: RouteList.reservations
+    },
+    {
+        title: 'Colaboradores',
+        icon: Icon.person,
+        link: RouteList.staff
     },
 ]

@@ -1,54 +1,89 @@
-<!--<ng-container *ngrxLet="roomList$ as roomList">-->
-<!--    <ng-container *ngrxLet="selectedRoom$ as selectedRoom">-->
-<!--        <ng-container *ngrxLet="selectedReservation$ as selectedReservation">-->
+<ng-container *ngrxLet="loading$ as loading">
+    <div class="container">
+        <div class="full">
+            <h3>Quartos</h3>
+        </div>
+        <mat-card class="full card" appearance="outlined">
+            <div class="head">
+                <div>
+                    @if (showAddForm) {
+                        <button mat-button (click)="showAddForm = false">
+                            <mat-icon>arrow_back</mat-icon>
+                            Voltar
+                        </button>
+                    }
+                </div>
+                <div></div>
+                <div>
+                    <button mat-stroked-button (click)="showAddForm = true">
+                        <mat-icon>add</mat-icon>
+                        Adicionar quarto
+                    </button>
+                </div>
+            </div>
+            <mat-card-content>
+                @if (loading) {
+                    <mat-spinner></mat-spinner>
+                } @else if (showAddForm) {
+                    <form [formGroup]="roomForm">
+                        <mat-form-field>
+                            <mat-label>Selecione um quarto</mat-label>
+                            <mat-select [formControlName]="'description'">
+                                <mat-option [value]="RoomType.single"> {{ RoomType.single }}</mat-option>
+                                <mat-option [value]="RoomType.doubleBed"> {{ RoomType.doubleBed }}</mat-option>
+                                <mat-option [value]="RoomType.studio"> {{ RoomType.studio }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Preço</mat-label>
+                            <mat-icon matIconPrefix>number</mat-icon>
+                            <input matInput [formControlName]="'price'" currencyMask>
+                            @if (price?.invalid) {
+                                <mat-error> {{ getFormErrorMessage(price) }}</mat-error>
+                            }
+                        </mat-form-field>
+                    </form>
+                } @else {
+                    <mat-table [dataSource]="(roomList$ | async) ?? []">
+                        <ng-container matColumnDef="id">
+                            <mat-header-cell *matHeaderCellDef> Número</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{ element.id }}</mat-cell>
+                        </ng-container>
 
-<!--            <div class="container">-->
-<!--                <div class="full">-->
-<!--                    <h3>Quartos</h3>-->
-<!--                </div>-->
-<!--                @for (room of roomList; track room) {-->
-<!--                    <div class="eight">-->
-<!--                        <mat-card class="room-card" appearance="outlined"-->
-<!--                                  [class.active]="selectedRoom?.number === room.number"-->
-<!--                                  [matTooltip]="room.status | titlecase"-->
-<!--                                  (click)="selectRoom(room)" matRipple>-->
-<!--                            <mat-icon [class.text-green]="room.status === RoomStatusEnum.free"-->
-<!--                                      [class.text-orange]="room.status === RoomStatusEnum.reserved"-->
-<!--                                      [class.text-red]="room.status === RoomStatusEnum.busy">meeting_room-->
-<!--                            </mat-icon>-->
-<!--                            <h4>Quarto {{ room.number }} </h4>-->
-<!--                        </mat-card>-->
-<!--                    </div>-->
-<!--                }-->
-<!--            </div>-->
-<!--            @if (selectedRoom) {-->
-<!--                <div class="full">-->
-<!--                    <mat-card class="room-details" appearance="outlined">-->
-<!--                        <mat-card-header>-->
-<!--                            <mat-card-title> Informações do quarto</mat-card-title>-->
-<!--                        </mat-card-header>-->
-<!--                        <mat-card-content>-->
-<!--                            <p>Quarto {{ selectedRoom?.number }}</p>-->
-<!--                            <p>Status: {{ selectedRoom?.status | titlecase }}</p>-->
-<!--                            <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>-->
-<!--                            @if (selectedRoom?.status !== RoomStatusEnum.free) {-->
-<!--                                <p>Hóspede: {{ selectedReservation?.guest?.personalData?.name | titlecase }} </p>-->
-<!--                                <p>CPF: {{ selectedReservation?.guest?.personalData?.documentNumber | cpf }} </p>-->
-<!--                                <p>Data de entrada: {{ selectedReservation?.startDate | date: 'dd-MM-yyyy' }} </p>-->
-<!--                                <p>Data de saída: {{ selectedReservation?.endDate | date: 'dd-MM-yyyy' }} </p>-->
-<!--                                <p>Status de pagamento: {{ selectedReservation?.paymentStatus | titlecase }}</p>-->
-<!--                            }-->
-<!--                        </mat-card-content>-->
-<!--                        <mat-card-actions>-->
-<!--                            @if (selectedRoom.status === RoomStatusEnum.busy) {-->
-<!--                                <button mat-stroked-button (click)="checkout(selectedRoom)">Fazer check-out</button>-->
-<!--                            } @else {-->
-<!--                                <button mat-stroked-button (click)="checkin(selectedRoom)">Fazer check-in</button>-->
-<!--                            }-->
-<!--                        </mat-card-actions>-->
-<!--                    </mat-card>-->
-<!--                </div>-->
-<!--            }-->
-<!--        </ng-container>-->
-<!--    </ng-container>-->
-<!--</ng-container>-->
+                        <ng-container matColumnDef="price">
+                            <mat-header-cell *matHeaderCellDef> Diária</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{ element.price | currency : 'BRL' }}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef> Descrição </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{ element.description }}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{ element.status | titlecase }}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="actions">
+                            <mat-header-cell *matHeaderCellDef> Ações</mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <button mat-icon-button (click)="delete(element.id)">
+                                    <mat-icon [svgIcon]="Icon.trash"></mat-icon>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                    </mat-table>
+                }
+            </mat-card-content>
+            @if (showAddForm) {
+                <mat-card-actions class="add-staff-actions">
+                    <button mat-flat-button (click)="add()" [disabled]="loading">Adicionar</button>
+                </mat-card-actions>
+            }
+        </mat-card>
+    </div>
+</ng-container>

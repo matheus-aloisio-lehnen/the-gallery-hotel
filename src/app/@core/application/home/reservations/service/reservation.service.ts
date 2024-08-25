@@ -2,15 +2,10 @@ import { Injectable } from '@angular/core';
 import { Store } from "@ngrx/store";
 
 import { CreateReservationDto } from "../../../../domain/dto/reservation/create/create-reservation.dto";
-import { Reservation } from "../../../../domain/model/reservation";
-import { setRoomList, updateRoomInList } from "../../../../infra/store/ngrx/actions/room.actions";
-import { generateRandomReservations } from "../../../../infra/utils/generators/random-reservation";
-import { ROOMS } from "../../../../domain/mock/rooms.mock";
-import { AppState } from "../../../../infra/store/ngrx/state/app.state";
-import { Room } from "../../../../domain/model/room";
-import { setCheckoutList, setReservationList } from "../../../../infra/store/ngrx/actions/reservation.actions";
 import { formatDate } from "@angular/common";
-import { RoomStatus } from "../../../../domain/enum/room-status.enum";
+import { Reservation } from "../../../../domain/interface/reservation.interface";
+import { Room } from "../../../../domain/interface/room.interface";
+import { AppState } from "../../../../domain/type/app-state.type";
 
 @Injectable({
     providedIn: 'root'
@@ -23,13 +18,13 @@ export class ReservationService {
     }
 
     getReservations() {
-        const roomList = generateRandomReservations(new Date().getMonth() + 1, ROOMS.length);
-        const checkoutList = this.filterCheckoutList(roomList);
-        const reservationList = this.filterReservationList(roomList);
-
-        this.store.dispatch(setRoomList({ roomList: roomList }));
-        this.store.dispatch(setCheckoutList({ checkoutList: checkoutList }));
-        this.store.dispatch(setReservationList({ reservationList: reservationList }));
+        // const roomList = generateRandomReservations(new Date().getMonth() + 1, ROOMS.length);
+        // const checkoutList = this.filterCheckoutList(roomList);
+        // const reservationList = this.filterReservationList(roomList);
+        //
+        // this.store.dispatch(setRoomList({ roomList: roomList }));
+        // this.store.dispatch(setCheckoutList({ checkoutList: checkoutList }));
+        // this.store.dispatch(setReservationList({ reservationList: reservationList }));
 
     }
 

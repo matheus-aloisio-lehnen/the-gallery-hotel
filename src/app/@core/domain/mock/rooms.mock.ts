@@ -1,65 +1,47 @@
-import { Room } from "../model/room";
 import { RoomStatus } from "../enum/room-status.enum";
+import { Room } from "../interface/room.interface";
 
-export const ROOMS: Room[] = [
+export const roomsMock: Room[] = [
     {
-        number: 1,
+        id: 1,
         status: RoomStatus.busy,
         price: 150,
-        reservations: []
+        reservations: [],
+        dailyStatus: []
     },
     {
-        number: 2,
+        id: 2,
         status: RoomStatus.free,
         price: 150,
-        reservations: []
+        reservations: [],
+        dailyStatus: []
     },
     {
-        number: 3,
+        id: 3,
         status: RoomStatus.reserved,
         price: 150,
-        reservations: []
+        reservations: [],
+        dailyStatus: []
     },
     {
-        number: 4,
+        id: 4,
         status: RoomStatus.busy,
         price: 250,
-        reservations: []
+        reservations: [],
+        dailyStatus: []
     },
     {
-        number: 5,
+        id: 5,
         status: RoomStatus.free,
         price: 250,
-        reservations: []
+        reservations: [],
+        dailyStatus: []
     },
     {
-        number: 6,
+        id: 6,
         status: RoomStatus.reserved,
         price: 250,
-        reservations: []
+        reservations: [],
+        dailyStatus: []
     },
-    // {
-    //     number: 7,
-    //     status: RoomStatus.reserved,
-    //     price: 250,
-    //     reservations: []
-    // },
-    // {
-    //     number: 8,
-    //     status: RoomStatus.reserved,
-    //     price: 250,
-    //     reservations: []
-    // },
-    // {
-    //     number: 9,
-    //     status: RoomStatus.reserved,
-    //     price: 250,
-    //     reservations: []
-    // },
-    // {
-    //     number: 10,
-    //     status: RoomStatus.reserved,
-    //     price: 250,
-    //     reservations: []
-    // }
 ]

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LetDirective } from "@ngrx/component";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -13,25 +13,16 @@ import { NgxMaskDirective } from "ngx-mask";
 import { Observable } from "rxjs";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
-import { differenceInDays } from "date-fns";
 
 import { ErrorMessengerUtil } from "../../../../../infra/utils/form/messenger/error-messenger.util";
-import { Room } from "../../../../../domain/model/room";
 import { ReservationService } from "../../../reservations/service/reservation.service";
-import { AppState } from "../../../../../infra/store/ngrx/state/app.state";
 import { Loading } from "../../../../../domain/enum/loading.enum";
-import { selectRoom, selectRoomList } from "../../../../../infra/store/ngrx/selectors/room.selector";
-import {
-    CreateReservationDto,
-    createReservationDtoFactory
-} from "../../../../../domain/dto/reservation/create/create-reservation.dto";
-import { RoomStatus } from "../../../../../domain/enum/room-status.enum";
-import { setRoom, updateRoomInList } from "../../../../../infra/store/ngrx/actions/room.actions";
 import { CPF_MASK, MOBILE_MASK, ZIPCODE_MASK } from "../../../../../infra/configs/mask.config";
 import { MatCardModule } from "@angular/material/card";
 import { CurrencyMaskModule } from "ng2-currency-mask";
-import { PaymentStatus } from "../../../../../domain/enum/payment-status.enum";
-import { Reservation } from "../../../../../domain/model/reservation";
+import { Room } from "../../../../../domain/interface/room.interface";
+import { AppState } from "../../../../../domain/type/app-state.type";
+import { selectSelectedRoom } from "../../../../../infra/store/ngrx/selectors/room.selector";
 
 @Component({
     selector: 'app-check-in',
@@ -81,8 +72,8 @@ export class CheckInComponent extends ErrorMessengerUtil {
         this.ZIPCODE_MASK = ZIPCODE_MASK;
         this.CPF_MASK = CPF_MASK;
         this.MOBILE_MASK = MOBILE_MASK;
-        this.loading$ = this.store.select((appState: AppState) => appState.loading[Loading.signUp])
-        this.room$ = this.store.select(selectRoom);
+        this.loading$ = this.store.select((appState: AppState) => appState.loading[Loading.addGuest])
+        this.room$ = this.store.select(selectSelectedRoom);
         this.today = new Date();
         this.reservationForm = this.formBuilder.group({
             startDate: [ this.today, Validators.required ],
@@ -116,34 +107,33 @@ export class CheckInComponent extends ErrorMessengerUtil {
         this.paymentForm = this.formBuilder.group({
             payment: [ '', Validators.required ],
         }, { updateOn: 'blur' });
-        this.store.select(selectRoomList).subscribe(result => console.log('result', result))
     }
 
     async checkIn(room: Room | null) {
-        if (!room) return;
-        if (await this.checkInvalidForm()) return;
-        const diffDays = differenceInDays(new Date(this.endDate?.value), new Date(this.startDate?.value)) + 1;
-        this.reservationForm.patchValue({ roomNumber: room.number });
-        this.paymentForm.patchValue({ payment: room.price * diffDays });
-
-        const createReservationDto: CreateReservationDto = createReservationDtoFactory(this.reservationForm, this.personalDataForm, this.addressForm, this.paymentForm);
+        // if (!room) return;
+        // if (await this.checkInvalidForm()) return;
+        // const diffDays = differenceInDays(new Date(this.endDate?.value), new Date(this.startDate?.value)) + 1;
+        // this.reservationForm.patchValue({ roomNumber: room.number });
+        // this.paymentForm.patchValue({ payment: room.price * diffDays });
+        //
+        // const createReservationDto: CreateReservationDto = createReservationDtoFactory(this.reservationForm, this.personalDataForm, this.addressForm, this.paymentForm);
         // await this.reservationService.add(createReservationDto);
 
 
 
-        const RESERVATION_MOCK: Reservation = {
-            startDate: new Date(createReservationDto.startDate),
-            endDate: new Date(createReservationDto.endDate),
-            paymentStatus: PaymentStatus.paid,
-            roomNumber: createReservationDto.roomNumber,
-            guest: createReservationDto.guest
-        }
-        const reservations = [RESERVATION_MOCK, ...room.reservations ?? []]
-        const updatedRoom = { ...room, reservations: reservations, status: RoomStatus.busy};
-
-        this.store.dispatch(updateRoomInList({ room: updatedRoom }));
-        this.store.dispatch(setRoom({ room: null }));
-        this.dialogRef.close(true);
+        // const RESERVATION_MOCK: Reservation = {
+        //     startDate: new Date(createReservationDto.startDate),
+        //     endDate: new Date(createReservationDto.endDate),
+        //     paymentStatus: PaymentStatus.paid,
+        //     roomNumber: createReservationDto.roomNumber,
+        //     guest: createReservationDto.guest
+        // }
+        // const reservations = [RESERVATION_MOCK, ...room.reservations ?? []]
+        // const updatedRoom = { ...room, reservations: reservations, status: RoomStatus.busy};
+        //
+        // // this.store.dispatch(updateRoomInList({ room: updatedRoom }));
+        // // this.store.dispatch(setRoom({ room: null }));
+        // this.dialogRef.close(true);
     }
 
     get startDate() {

@@ -19,6 +19,15 @@ html {
     --mdc-elevated-card-container-shape: 2rem !important;
     --mat-stepper-header-hover-state-layer-shape: 2rem !important;
     --mat-stepper-header-focus-state-layer-shape: 2rem !important;
+    .outer-container {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
     .container {
         display: grid;
         grid-template-columns: repeat(8, 1fr);

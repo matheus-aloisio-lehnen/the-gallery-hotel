@@ -13,5 +13,5 @@ export enum Icon {
     dashboard = 'dashboard',
     rooms = 'meeting_room',
     reservation = 'event',
-    cashFlow = 'payments',
+    person = 'person',
 }

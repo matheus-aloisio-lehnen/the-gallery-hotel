@@ -5,7 +5,7 @@ import { StorageKeys } from "../../../domain/enum/storage-keys.enum";
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const localStorage = inject(LocalStorage);
-    const authToken = localStorage.get(StorageKeys.authToken);
+    const authToken = localStorage.get(StorageKeys.token);
 
     req = req.clone({ setHeaders: { Authorization: `Bearer ${ authToken }` } })
 

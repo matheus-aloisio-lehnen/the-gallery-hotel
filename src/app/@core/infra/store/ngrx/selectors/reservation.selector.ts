@@ -1,23 +1,20 @@
-import { createSelector } from '@ngrx/store';
-import { AppState } from "../state/app.state";
-import { ReservationState } from "../state/reservation.state";
+import { AppState } from "../../../../domain/type/app-state.type";
+import { createSelector } from "@ngrx/store";
+import { ReservationState } from "../../../../domain/type/reservation-state.type";
 
-export const selectReservation = createSelector(
-    (state: AppState) => state.reservation,
-    (reservationState: ReservationState) => reservationState.reservation
+export const selectReservationState = (state: AppState) => state.reservationState;
+
+export const selectSelectedReservation = createSelector(
+    selectReservationState,
+    (state: ReservationState) => state.selectedReservation
 );
 
-export const selectCheckout = createSelector(
-    (state: AppState) => state.reservation,
-    (reservationState: ReservationState) => reservationState.checkout
+export const selectAllReservations = createSelector(
+    selectReservationState,
+    (state: ReservationState) => state.reservationList
 );
 
-export const selectReservationList = createSelector(
-    (state: AppState) => state.reservation,
-    (reservationState: ReservationState) => reservationState.reservationList
-);
-
-export const selectCheckoutList = createSelector(
-    (state: AppState) => state.reservation,
-    (reservationState: ReservationState) => reservationState.checkoutList
+export const hasReservations = createSelector(
+    selectAllReservations,
+    (staffList) => staffList.length > 0
 );

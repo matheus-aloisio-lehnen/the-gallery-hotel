@@ -4,14 +4,11 @@ import { MatButtonModule } from "@angular/material/button";
 import { Router, RouterModule } from "@angular/router";
 import { MatIconModule } from "@angular/material/icon";
 import { LetDirective } from "@ngrx/component";
-import { Observable } from "rxjs";
-
-import { ConfigService } from "../../infra/services/config/config.service";
-import { AppState } from "../../infra/store/ngrx/state/app.state";
 import { Store } from "@ngrx/store";
 import { MatSidenavContainer, MatSidenavContent } from "@angular/material/sidenav";
+
 import { BaseComponent } from "../shared/base/base.component";
-import { routes } from "../../../app.routes";
+import { AppState } from "../../domain/type/app-state.type";
 
 @Component({
     selector: 'app-page-not-found',
@@ -30,7 +27,6 @@ import { routes } from "../../../app.routes";
     ]
 })
 export class PageNotFoundComponent extends BaseComponent {
-
 
 
     constructor(

@@ -12,13 +12,12 @@
         <p>Tem certeza que deseja cancelar esta reserva?</p>
         <mat-card appearance="outlined">
             <mat-card-header>
-                <mat-card-title> Quarto {{ reservation.roomNumber }}</mat-card-title>
+                <mat-card-title> Quarto {{ reservation.room.id }}</mat-card-title>
             </mat-card-header>
             <mat-card-content>
-                <p>Hóspede: {{ reservation.guest.personalData?.name }}</p>
+                <p>Hóspede: {{ reservation.user.personalData?.name }}</p>
                 <p>Data de entrada: {{ reservation.startDate }}</p>
                 <p>Data de saída: {{ reservation.endDate }}</p>
-                <p>Status de pagamento: {{ reservation.paymentStatus | titlecase }}</p>
             </mat-card-content>
         </mat-card>
     </div>

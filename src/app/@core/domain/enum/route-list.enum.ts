@@ -1,12 +1,11 @@
 export enum RouteList {
     wildCard = '**',
-    home = 'home',
     auth = 'auth',
+    home = 'home',
     signIn = 'sign-in',
     signUp = 'sign-up',
-    forgotPassword = 'forgot-password',
-    changePassword = 'change-password',
-    dashboard = 'dashboard',
+    dash = 'dash',
     rooms = 'rooms',
     reservations = 'reservations',
+    staff = 'staff',
 }

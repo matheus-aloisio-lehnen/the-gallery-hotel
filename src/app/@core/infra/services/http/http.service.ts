@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
+import { map } from "rxjs";
 
-import { SignInDto } from "../../../domain/dto/auth/sign-in/sign-in.dto";
 import { environment } from "../../../../../environments/environment";
 import { Loading } from "../../../domain/enum/loading.enum";
 import { CreateUserDto } from "../../../domain/dto/user/create/create-user.dto";
 import { HttpAdapter } from "./adapter/http.adapter";
-import { User } from "../../../domain/model/user";
 import { Result } from "../../../domain/type/result.type";
-import { ResetPassword } from "../../../domain/model/reset-password";
-import { ChangePasswordDto } from "../../../domain/dto/auth/reset-password/change-password.dto";
-import { Observable } from "rxjs";
-import { ForgotPasswordDto } from "../../../domain/dto/auth/reset-password/forgot-password.dto";
-import { Auth } from "../../../domain/model/auth";
+import { User } from "../../../domain/interface/user.interface";
+import { Auth } from "../../../domain/interface/auth.interface";
+import { CreateRoomDto } from "../../../domain/dto/room/create-room.dto";
+import { SignInDto } from "../../../domain/dto/sign-in/sign-in.dto";
+import { CreateReservationDto } from "../../../domain/dto/reservation/create/create-reservation.dto";
+import { Room } from "../../../domain/interface/room.interface";
+import { DashContract } from "../../../domain/type/dash-contract.type";
 
 
 @Injectable({
@@ -26,25 +27,70 @@ export class HttpService extends HttpAdapter {
         return result.data;
     }
 
-    async signUp(createUserDto: CreateUserDto): Promise<User | boolean> {
-        const url: string = `${ environment.url }/user/create`;
-        const result = await this.sendAsync<Result<User | boolean>>('post', url, createUserDto, Loading.signUp);
+    getAllStaffs() {
+        const url: string = `${ environment.url }/staff/get-all`;
+        return this.send<Result<User>>('get', url, null, Loading.getAllStaffs)
+            .pipe(map(res => res.data));
+    }
+
+    addStaff(createUserDto: CreateUserDto) {
+        const url: string = `${ environment.url }/staff/create`;
+        return this.send<Result<User | boolean>>('post', url, createUserDto, Loading.addStaff)
+            .pipe(map(res => res.data));
+    }
+
+    deleteStaff(id: number) {
+        const url: string = `${ environment.url }/staff/delete/${ id }`;
+        return this.send<Result<boolean>>('delete', url, null, Loading.deleteStaff)
+            .pipe(map(res => res.data));
+    }
+
+    getAllRooms() {
+        const url: string = `${ environment.url }/room/get-all`;
+        return this.send<Result<User>>('get', url, null, Loading.getAllRooms)
+            .pipe(map(res => res.data));
+    }
+
+    addRoom(createRoomDto: CreateRoomDto) {
+        const url: string = `${ environment.url }/room/create`;
+        return this.send<Result<User | boolean>>('post', url, createRoomDto, Loading.addRoom)
+            .pipe(map(res => res.data));
+    }
+
+    deleteRoom(id: number) {
+        const url: string = `${ environment.url }/room/delete/${ id }`;
+        return this.send<Result<boolean>>('delete', url, null, Loading.deleteRoom)
+            .pipe(map(res => res.data));
+    }
+
+    async isRoomAvailable(queryParams: string) {
+        const url: string = `${ environment.url }/room/is-available${queryParams}`;
+        const result = await this.sendAsync<Result<boolean>>('get', url, null, Loading.isRoomAvailable);
         return result.data;
     }
 
-    async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<Result<boolean>> {
-        const url: string = `${ environment.url }/auth/forgot-password`;
-        return await this.sendAsync('post', url, forgotPasswordDto, Loading.forgotPassword);
+    getAllReservationsByMonth(month: number) {
+        const url: string = `${ environment.url }/reservation/get-all?month=${month}`;
+        return this.send<Result<Room[]>>('get', url, null, Loading.getAllReservationsByMonth)
+            .pipe(map(res => res.data));
     }
 
-    hasValidResetPassword(id: string): Observable<Result<ResetPassword>> {
-        const url: string = `${ environment.url }/auth/has-valid-reset-password/${id}`;
-        return this.send<Result<ResetPassword>>('get', url, null, Loading.hasValidResetPassword);
+    addReservation(createReservationDto: CreateReservationDto) {
+        const url: string = `${ environment.url }/reservation/create`;
+        return this.send<Result<User | boolean>>('post', url, createReservationDto, Loading.addReservation)
+            .pipe(map(res => res.data));
     }
 
-    async changePassword(resetPasswordId: string, changePasswordDto: ChangePasswordDto): Promise<Result<boolean>> {
-        const url: string = `${ environment.url }/auth/change-password/${resetPasswordId}`;
-        return this.sendAsync<Result<boolean>>('put', url, changePasswordDto, Loading.changePassword);
+    deleteReservation(id: number) {
+        const url: string = `${ environment.url }/reservation/delete/${ id }`;
+        return this.send<Result<boolean>>('delete', url, null, Loading.deleteReservation)
+            .pipe(map(res => res.data));
+    }
+
+    loadDashData() {
+        const url: string = `${ environment.url }/dash/get-all`;
+        return this.send<Result<DashContract>>('get', url, null, Loading.getDash)
+            .pipe(map(res => res.data));
     }
 
 }

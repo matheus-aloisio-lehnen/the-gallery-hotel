@@ -1,15 +1,20 @@
 import { ActionReducer, createReducer, on } from '@ngrx/store';
+import { Reservation } from "../../../../domain/interface/reservation.interface";
 import {
-    addCheckoutToList,
-    addReservationToList, createCheckout,
-    createReservation, deleteCheckout,
-    deleteReservation, removeCheckoutFromList, removeReservationFromList, setCheckout, setCheckoutList,
-    setReservation,
-    setReservationList, updateCheckout, updateCheckoutInList,
+    addReservationToList,
+    createReservation,
+    deleteReservation, removeReservationFromList,
+    setReservation, setReservationList,
     updateReservation, updateReservationInList
 } from "../actions/reservation.actions";
-import { initialReservationState, ReservationState } from "../state/reservation.state";
-import { Reservation } from "../../../../domain/model/reservation";
+import { ReservationState } from "../../../../domain/type/reservation-state.type";
+import { addStaffsToList } from "../actions/staff.actions";
+
+
+const initialReservationState: ReservationState = {
+    selectedReservation: null,
+    reservationList: [],
+};
 
 export const reservationReducer: ActionReducer<ReservationState> = createReducer(
     initialReservationState,
@@ -29,9 +34,9 @@ export const reservationReducer: ActionReducer<ReservationState> = createReducer
         ...state,
         reservation
     })),
-    on(addReservationToList, (state, { reservation }) => ({
+    on(addReservationToList, (state, { reservationList }) => ({
         ...state,
-        reservationList: [...state.reservationList, reservation]
+        reservationList
     })),
     on(updateReservationInList, (state, { reservation }) => ({
         ...state,
@@ -47,41 +52,4 @@ export const reservationReducer: ActionReducer<ReservationState> = createReducer
         ...state,
         reservationList
     })),
-
-    on(createCheckout, (state, { checkout }) => ({
-        ...state,
-        checkout
-    })),
-    on(updateCheckout, (state, { checkout }) => ({
-        ...state,
-        checkout
-    })),
-    on(deleteCheckout, (state) => ({
-        ...state,
-        checkout: null
-    })),
-    on(setCheckout, (state, { checkout }) => ({
-        ...state,
-        checkout
-    })),
-    on(addCheckoutToList, (state, { checkout }) => ({
-        ...state,
-        checkoutList: [...state.checkoutList, checkout]
-    })),
-    on(updateCheckoutInList, (state, { checkout }) => ({
-        ...state,
-        checkoutList: state.checkoutList.map((c: Reservation) =>
-            c.id === checkout.id ? { ...c, ...checkout } : c
-        )
-    })),
-    on(removeCheckoutFromList, (state, { id }) => ({
-        ...state,
-        checkoutList: state.checkoutList.filter((c: Reservation) => c.id !== id)
-    })),
-
-    on(setCheckoutList, (state, { checkoutList }) => ({
-        ...state,
-        checkoutList
-    })),
-
 );

@@ -5,8 +5,8 @@ import { Store } from "@ngrx/store";
 import { OverlayContainer } from "@angular/cdk/overlay";
 import { RouterModule } from "@angular/router";
 
-import { AppState } from "./@core/infra/store/ngrx/state/app.state";
 import { registerAllIcons } from "./@core/infra/utils/icon/icon.utils";
+import { AppState } from "./@core/domain/type/app-state.type";
 
 @Component({
     selector: 'app-root',

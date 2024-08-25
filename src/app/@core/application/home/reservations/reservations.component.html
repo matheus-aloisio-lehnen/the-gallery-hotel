@@ -1,3 +1,79 @@
+<ng-container *ngrxLet="loading$ as loading">
+    <div class="container">
+        <div class="full">
+            <h3>Reservas</h3>
+        </div>
+        <mat-card class="full card" appearance="outlined">
+            <div class="head">
+                <div></div>
+                <div></div>
+                <div>
+                    <button mat-stroked-button (click)="add()">
+                        <mat-icon>add</mat-icon>
+                        Adicionar reserva
+                    </button>
+                </div>
+            </div>
+            <mat-card-content>
+                <mat-tab-group [(selectedIndex)]="selectedMonth" (selectedIndexChange)="onTabChange()" class="full"
+                               mat-stretch-tabs="false" mat-align-tabs="center">
+                    @for (month of months; track month.id) {
+                        <mat-tab [label]="month.name">
+                            <ng-template matTabContent>
+                                <div class="custom-card">
+                                    <table mat-table [dataSource]="(roomList$ | async) ?? []">
+                                        @for (day of displayedColumns; track day) {
+                                            <ng-container [matColumnDef]="day">
+                                                <th mat-header-cell *matHeaderCellDef
+                                                    [class.text-primary]="today == day"
+                                                    [style.text-align]="'center'"> {{ day === 'room' ? 'Quarto' : day }}
+                                                </th>
+                                                <td mat-cell *matCellDef="let room"
+                                                    [style.background-color]="getColor(day, room)"
+                                                    [class.start-date]="isStartDate(day, room)"
+                                                    [class.end-date]="isEndDate(day, room)"
+                                                    [class.has-reservation]="room.dailyStatus[day]"
+                                                    (click)="showDetails(day, room)">
+                                                    {{ getGuestName(day, room, room.dailyStatus[day]) }}
+                                                </td>
+                                            </ng-container>
+                                        }
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                    </table>
+                                </div>
+                            </ng-template>
+                        </mat-tab>
+                    }
+                </mat-tab-group>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <div class="full">
+        @if (selectedReservation) {
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                    <mat-card-title> Informações de reserva</mat-card-title>
+                    <mat-card-subtitle>Quarto {{ selectedReservation.room.id }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>Hóspede: {{ selectedReservation.user.personalData?.name }}</p>
+                    <p>Data de entrada: {{ selectedReservation.startDate | date: 'dd-MM-yyyy' }}</p>
+                    <p>Data de saída: {{ selectedReservation.endDate | date: 'dd-MM-yyyy' }}</p>
+                </mat-card-content>
+                <mat-card-actions align="end">
+                    <button mat-button class="text-danger" (click)="delete()">
+                        <mat-icon>delete</mat-icon>
+                        Excluir
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        }
+    </div>
+</ng-container>
+
+
+
 <!--<ng-container *ngrxLet="roomList$ as roomList">-->
 <!--    <ng-container *ngrxLet="selectedRoom$ as room">-->
 <!--        <ng-container *ngrxLet="selectedReservation$ as reservation">-->

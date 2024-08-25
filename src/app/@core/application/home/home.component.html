@@ -1,4 +1,4 @@
-<ng-container *ngrxLet="isDarkMode$ as darkMode">
+<ng-container *ngrxLet="isDarkMode$ as isDarkMode">
     <div class="home-container">
         <mat-toolbar class="header">
             <div>
@@ -8,8 +8,8 @@
                 <h4 class="brand">The Gallery</h4>
             </div>
             <div>
-                <button mat-icon-button (click)="configService.changeThemeMode(darkMode)">
-                    <mat-icon> {{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                <button mat-icon-button (click)="changeThemeMode(isDarkMode)">
+                    <mat-icon> {{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
                 </button>
                 <button mat-icon-button (click)="logout()">
                     <mat-icon> logout </mat-icon>
@@ -25,7 +25,7 @@
                          [fixedBottomGap]="100"
                          (keydown.escape)="snav.close()">
                 <div>
-                    <img [ngSrc]="'/assets/logo/logo.webp'" alt="Logo do Hotel" width="125" height="125">
+                    <img [ngSrc]="'assets/logo/logo.webp'" alt="Logo do Hotel" width="125" height="125">
                 </div>
                 <mat-divider></mat-divider>
                 <mat-nav-list>
@@ -45,9 +45,7 @@
             </mat-sidenav-content>
         </mat-sidenav-container>
         <mat-toolbar class="footer">
-            <div>
-                <p>© Developed by Matheus Lehnen </p>
-            </div>
+            <p class="mat-label-small">© Developed by Matheus Lehnen </p>
             <div>
                 <a mat-icon-button [href]="'https://www.linkedin.com/in/matheus-lehnen/'" [target]="'_blank'" [matTooltip]="'Visit my LinkedIn profile'">
                     <mat-icon [svgIcon]="'linkedin'"></mat-icon>
@@ -56,7 +54,6 @@
                     <mat-icon [svgIcon]="'github'"></mat-icon>
                 </a>
             </div>
-            <div></div>
         </mat-toolbar>
     </div>
 </ng-container>

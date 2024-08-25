@@ -1,7 +1,9 @@
 import { ActionReducer, createReducer, on } from '@ngrx/store';
 import * as LoadingActions from '../actions/loading.actions';
-import { initialLoadingState, LoadingState } from "../state/loading.state";
+import { AppState } from "../../../../domain/type/app-state.type";
+import { LoadingState } from "../../../../domain/type/loading-state.type";
 
+const initialLoadingState: AppState['loading'] = {};
 
 export const loadingReducer: ActionReducer<LoadingState> = createReducer(
     initialLoadingState,

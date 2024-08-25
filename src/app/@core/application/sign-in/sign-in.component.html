@@ -1,0 +1,63 @@
+<ng-container *ngrxLet="isDarkMode$ as isDarkMode">
+    <div class="outer-container">
+        <mat-sidenav-container>
+            <mat-sidenav-content>
+                <main>
+                    <mat-card class="card bg-container" appearance="outlined">
+                        <div class="card-top">
+                            <div></div>
+                            <div>
+                                <button mat-icon-button
+                                        (click)="changeThemeMode(isDarkMode)">
+                                    <mat-icon> {{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-card-header>
+                            <mat-card-title>
+                                <h1 class="brand">The Gallery</h1>
+                            </mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <h4>Login</h4>
+                            <form [formGroup]="form" (keydown.enter)="$event.preventDefault(); signIn()">
+                                <mat-form-field>
+                                    <mat-icon matIconPrefix>mail</mat-icon>
+                                    <mat-label>Email</mat-label>
+                                    <input matInput [formControlName]="'email'" type="email">
+                                    @if (email?.invalid) {
+                                        <mat-error> {{ getFormErrorMessage(email) }}</mat-error>
+                                    }
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <mat-label>Senha</mat-label>
+                                    <mat-icon matIconPrefix>lock</mat-icon>
+                                    <input matInput [formControlName]="'password'" [type]="hide ? 'password' : 'text'">
+                                    <button mat-icon-button matIconSuffix (click)="hide = !hide">
+                                        <mat-icon>visibility{{ hide ? '' : '_off' }}</mat-icon>
+                                    </button>
+                                    @if (password?.invalid) {
+                                        <mat-error> {{ getFormErrorMessage(password) }}</mat-error>
+                                    }
+                                </mat-form-field>
+                            </form>
+                        </mat-card-content>
+                        <mat-card-actions class="sign-in-actions">
+                            <button mat-flat-button (click)="signIn()"> Entrar</button>
+                        </mat-card-actions>
+
+                        <mat-divider class="sign-in-divider"></mat-divider>
+                        <mat-card-footer class="sign-in-footer">
+                            <a mat-icon-button [href]="'https://www.linkedin.com/in/matheus-lehnen/'" [target]="'_blank'" [matTooltip]="'Visit my LinkedIn profile'">
+                                <mat-icon [svgIcon]="'linkedin'"></mat-icon>
+                            </a>
+                            <a mat-icon-button [href]="'https://github.com/matheus-aloisio-lehnen'" [target]="'_blank'" [matTooltip]="'Check out my GitHub profile'">
+                                <mat-icon [svgIcon]="'github'"></mat-icon>
+                            </a>
+                        </mat-card-footer>
+                    </mat-card>
+                </main>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
+    </div>
+</ng-container>

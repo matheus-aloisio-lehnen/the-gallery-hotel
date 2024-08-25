@@ -1,0 +1,349 @@
+<ng-container *ngrxLet="summaryCard$ as summaryCard">
+    <div class="container">
+        <div class="full">
+            <h3>Dashboard</h3>
+        </div>
+        <div class="full cards">
+            <div>
+                <mat-card class="dashboard-card" appearance="outlined">
+                    <div class="dashboard-card-header">
+                        <div class="box-icon bg-blue">
+                            <mat-icon class="i-2xl">bed</mat-icon>
+                        </div>
+                        <p>Quartos vagos</p>
+                        <h3> {{ summaryCard ? summaryCard.freeRooms : 0 }}</h3>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="dashboard-card-footer">
+                        <div class="stats">
+                            <mat-icon class="i-xs">open_in_new</mat-icon>
+                            Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+            <div>
+                <mat-card class="dashboard-card" appearance="outlined">
+                    <div class="dashboard-card-header">
+                        <div class="box-icon bg-red">
+                            <mat-icon class="i-2xl">flight_takeoff</mat-icon>
+                        </div>
+                        <p>Checkouts para hoje</p>
+                        <h3> {{ summaryCard ? summaryCard.outs : 0 }}</h3>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="dashboard-card-footer">
+                        <div class="stats">
+                            <mat-icon class="i-xs">open_in_new</mat-icon>
+                            Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+            <div>
+                <mat-card class="dashboard-card" appearance="outlined">
+                    <div class="dashboard-card-header">
+                        <div class="box-icon bg-orange">
+                            <mat-icon class="i-2xl">flight_land</mat-icon>
+                        </div>
+                        <p>Reservas para hoje</p>
+                        <h3> {{ summaryCard ? summaryCard.ins : 0 }}</h3>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="dashboard-card-footer">
+                        <div class="stats">
+                            <mat-icon class="i-xs">open_in_new</mat-icon>
+                            Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+    <div class="flex-wrapper">
+        @for (room of roomList$ | async; track room.status) {
+            <mat-card class="room-card" appearance="outlined" [matTooltip]="room.status | titlecase" (click)="selectedRoom = room" matRipple>
+                <mat-icon [class.text-green]="room.status === RoomStatus.free"
+                          [class.text-orange]="room.status === RoomStatus.reserved"
+                          [class.text-red]="room.status === RoomStatus.busy">door_back
+                </mat-icon>
+                <h4>Quarto {{ room.id }} </h4>
+            </mat-card>
+        }
+    </div>
+    @if(selectedRoom) {
+
+        OLA
+    }
+</ng-container>
+<!--                        <div class="half">-->
+<!--                            <mat-card class="details-card" appearance="outlined">-->
+<!--                                <div class="details-card-header">-->
+<!--                                    <h3>Checkouts do dia</h3>-->
+<!--                                </div>-->
+<!--                                <div class="details-card-body">-->
+<!--                                    <mat-form-field>-->
+<!--                                        <mat-label>Pesquisar hóspede</mat-label>-->
+<!--                                        <mat-icon matIconPrefix>search</mat-icon>-->
+<!--                                        <input matInput [(ngModel)]="checkoutResearch"-->
+<!--                                               (ngModelChange)="onCheckoutResearchChanges(checkoutList)">-->
+<!--                                    </mat-form-field>-->
+<!--                                    <div>-->
+<!--                                    </div>-->
+<!--                                    <mat-divider></mat-divider>-->
+<!--                                    @if (showCheckoutDetails) {-->
+<!--                                        <div class="container">-->
+<!--                                            <span class="quarter">Quarto:</span>-->
+<!--                                            <span class="more-than-half"> {{ selectedCheckout?.roomNumber }}</span>-->
+<!--                                            <span class="quarter">Hóspede:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.guest?.personalData?.name }}</span>-->
+<!--                                            <span class="quarter">Documento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.guest?.personalData?.documentNumber }}</span>-->
+<!--                                            <span class="quarter">Check-in:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.startDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Check-out:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.endDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Pagamento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.paymentStatus  | titlecase }}</span>-->
+<!--                                        </div>-->
+<!--                                        <mat-divider></mat-divider>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                                <div class="details-card-action">-->
+<!--                                    @if (showCheckoutDetails) {-->
+<!--                                        <button mat-stroked-button (click)="checkout()">Fazer check-out</button>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                            </mat-card>-->
+<!--                        </div>-->
+<!--                        <div class="half">-->
+<!--                            <mat-card class="details-card" appearance="outlined">-->
+<!--                                <div class="details-card-header">-->
+<!--                                    <h3>Reservas do dia</h3>-->
+<!--                                </div>-->
+<!--                                <div class="details-card-body">-->
+
+<!--                                    <mat-form-field>-->
+<!--                                        <mat-label>Pesquisar hóspede</mat-label>-->
+<!--                                        <mat-icon matIconPrefix>search</mat-icon>-->
+<!--                                        <input matInput [(ngModel)]="reservationResearch"-->
+<!--                                               (ngModelChange)="onReservationResearchChanges(reservationList)">-->
+<!--                                    </mat-form-field>-->
+<!--                                    <div>-->
+<!--                                    </div>-->
+<!--                                    <mat-divider></mat-divider>-->
+<!--                                    @if (showReservationDetails) {-->
+<!--                                        <div class="container">-->
+<!--                                            <span class="quarter">Quarto:</span>-->
+<!--                                            <span class="more-than-half"> {{ selectedReservation?.roomNumber }}</span>-->
+<!--                                            <span class="quarter">Hóspede:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.guest?.personalData?.name }}</span>-->
+<!--                                            <span class="quarter">Documento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.guest?.personalData?.documentNumber }}</span>-->
+<!--                                            <span class="quarter">Check-in:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.startDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Check-out:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.endDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Pagamento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.paymentStatus | titlecase }}</span>-->
+<!--                                        </div>-->
+<!--                                        <mat-divider></mat-divider>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                                <div class="details-card-action">-->
+<!--                                    @if (showReservationDetails) {-->
+<!--                                        <button mat-stroked-button (click)="checkin()">Fazer check-in</button>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                            </mat-card>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </ng-container>-->
+<!--            </ng-container>-->
+<!--        </ng-container>-->
+<!--    </ng-container>-->
+<!--</ng-container>-->
+
+<!--    @for (room of roomList$ | async; track room.id) {-->
+<!--        <div class="eight">-->
+<!--            <mat-card class="room-card" appearance="outlined" [matTooltip]="room.status | titlecase" (click)="selectRoom(room)" matRipple>-->
+<!--                <mat-icon [class.text-green]="room.status === RoomStatus.free"-->
+<!--                          [class.text-orange]="room.status === RoomStatus.reserved"-->
+<!--                          [class.text-red]="room.status === RoomStatus.busy">meeting_room-->
+<!--                </mat-icon>-->
+<!--                <h4>Quarto {{ room.number }} </h4>-->
+<!--            </mat-card>-->
+<!--        </div>-->
+<!--    }-->
+
+
+<!--<ng-container *ngrxLet="roomList$ as roomList">-->
+<!--    <ng-container *ngrxLet="reservationList$ as reservationList">-->
+<!--        <ng-container *ngrxLet="checkoutList$ as checkoutList">-->
+<!--            <ng-container *ngrxLet="selectedReservation$ as selectedReservation">-->
+<!--                <ng-container *ngrxLet="selectedCheckout$ as selectedCheckout">-->
+<!--                    <div class="container">-->
+<!--                        <div class="full">-->
+<!--                            <h3>Dashboard</h3>-->
+<!--                        </div>-->
+<!--                       <div class="full cards">-->
+<!--                           <div>-->
+<!--                               <mat-card class="dashboard-card" appearance="outlined">-->
+<!--                                   <div class="dashboard-card-header">-->
+<!--                                       <div class="box-icon bg-blue" [routerLink]="['..', RouteList.rooms]"-->
+<!--                                            [matTooltip]="'Ver quartos'">-->
+<!--                                           <mat-icon class="i-2xl">bed</mat-icon>-->
+<!--                                       </div>-->
+<!--                                       <p>Quartos vagos balcão</p>-->
+<!--                                       <h3>{{ countFreeRooms(roomList) }}</h3>-->
+<!--                                   </div>-->
+<!--                                   <mat-divider></mat-divider>-->
+<!--                                   <div class="dashboard-card-footer">-->
+<!--                                       <div class="stats">-->
+<!--                                           <mat-icon class="i-xs">open_in_new</mat-icon>-->
+<!--                                           Atualizado em:-->
+<!--                                       </div>-->
+<!--                                   </div>-->
+<!--                               </mat-card>-->
+<!--                           </div>-->
+
+<!--                           <div>-->
+<!--                               <mat-card class="dashboard-card" appearance="outlined">-->
+<!--                                   <div class="dashboard-card-header">-->
+<!--                                       <div class="box-icon bg-red" [routerLink]="['..', RouteList.rooms]"-->
+<!--                                            [matTooltip]="'Ver quartos'">-->
+<!--                                           <mat-icon class="i-2xl">flight_takeoff</mat-icon>-->
+<!--                                       </div>-->
+<!--                                       <p>Checkouts para hoje</p>-->
+<!--                                       <h3>{{ checkoutList?.length ?? 0 }}</h3>-->
+<!--                                   </div>-->
+<!--                                   <mat-divider></mat-divider>-->
+<!--                                   <div class="dashboard-card-footer">-->
+<!--                                       <div class="stats">-->
+<!--                                           <mat-icon class="i-xs">open_in_new</mat-icon>-->
+<!--                                           Atualizado em:-->
+<!--                                       </div>-->
+<!--                                   </div>-->
+<!--                               </mat-card>-->
+<!--                           </div>-->
+
+<!--                           <div>-->
+<!--                               <mat-card class="dashboard-card" appearance="outlined">-->
+<!--                                   <div class="dashboard-card-header">-->
+<!--                                       <div class="box-icon bg-orange" [routerLink]="['..', RouteList.reservations]"-->
+<!--                                            [matTooltip]="'Clique aqui para ver a planilha de reservas'">-->
+<!--                                           <mat-icon class="i-2xl">flight_land</mat-icon>-->
+<!--                                       </div>-->
+<!--                                       <p>Reservas para hoje</p>-->
+<!--                                       <h3>{{ reservationList?.length ?? 0 }}</h3>-->
+<!--                                   </div>-->
+<!--                                   <mat-divider></mat-divider>-->
+<!--                                   <div class="dashboard-card-footer">-->
+<!--                                       <div class="stats">-->
+<!--                                           <mat-icon class="i-xs">open_in_new</mat-icon>-->
+<!--                                           Atualizado em:-->
+<!--                                       </div>-->
+<!--                                   </div>-->
+<!--                               </mat-card>-->
+<!--                           </div>-->
+<!--                       </div>-->
+
+<!--                        <div class="half">-->
+<!--                            <mat-card class="details-card" appearance="outlined">-->
+<!--                                <div class="details-card-header">-->
+<!--                                    <h3>Checkouts do dia</h3>-->
+<!--                                </div>-->
+<!--                                <div class="details-card-body">-->
+<!--                                    <mat-form-field>-->
+<!--                                        <mat-label>Pesquisar hóspede</mat-label>-->
+<!--                                        <mat-icon matIconPrefix>search</mat-icon>-->
+<!--                                        <input matInput [(ngModel)]="checkoutResearch"-->
+<!--                                               (ngModelChange)="onCheckoutResearchChanges(checkoutList)">-->
+<!--                                    </mat-form-field>-->
+<!--                                    <div>-->
+<!--                                    </div>-->
+<!--                                    <mat-divider></mat-divider>-->
+<!--                                    @if (showCheckoutDetails) {-->
+<!--                                        <div class="container">-->
+<!--                                            <span class="quarter">Quarto:</span>-->
+<!--                                            <span class="more-than-half"> {{ selectedCheckout?.roomNumber }}</span>-->
+<!--                                            <span class="quarter">Hóspede:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.guest?.personalData?.name }}</span>-->
+<!--                                            <span class="quarter">Documento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.guest?.personalData?.documentNumber }}</span>-->
+<!--                                            <span class="quarter">Check-in:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.startDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Check-out:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.endDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Pagamento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedCheckout?.paymentStatus  | titlecase }}</span>-->
+<!--                                        </div>-->
+<!--                                        <mat-divider></mat-divider>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                                <div class="details-card-action">-->
+<!--                                    @if (showCheckoutDetails) {-->
+<!--                                        <button mat-stroked-button (click)="checkout()">Fazer check-out</button>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                            </mat-card>-->
+<!--                        </div>-->
+<!--                        <div class="half">-->
+<!--                            <mat-card class="details-card" appearance="outlined">-->
+<!--                                <div class="details-card-header">-->
+<!--                                    <h3>Reservas do dia</h3>-->
+<!--                                </div>-->
+<!--                                <div class="details-card-body">-->
+
+<!--                                    <mat-form-field>-->
+<!--                                        <mat-label>Pesquisar hóspede</mat-label>-->
+<!--                                        <mat-icon matIconPrefix>search</mat-icon>-->
+<!--                                        <input matInput [(ngModel)]="reservationResearch"-->
+<!--                                               (ngModelChange)="onReservationResearchChanges(reservationList)">-->
+<!--                                    </mat-form-field>-->
+<!--                                    <div>-->
+<!--                                    </div>-->
+<!--                                    <mat-divider></mat-divider>-->
+<!--                                    @if (showReservationDetails) {-->
+<!--                                        <div class="container">-->
+<!--                                            <span class="quarter">Quarto:</span>-->
+<!--                                            <span class="more-than-half"> {{ selectedReservation?.roomNumber }}</span>-->
+<!--                                            <span class="quarter">Hóspede:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.guest?.personalData?.name }}</span>-->
+<!--                                            <span class="quarter">Documento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.guest?.personalData?.documentNumber }}</span>-->
+<!--                                            <span class="quarter">Check-in:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.startDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Check-out:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.endDate | date: 'dd-MM-yyyy' }}</span>-->
+<!--                                            <span class="quarter">Pagamento:</span>-->
+<!--                                            <span class="more-than-half">{{ selectedReservation?.paymentStatus | titlecase }}</span>-->
+<!--                                        </div>-->
+<!--                                        <mat-divider></mat-divider>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                                <div class="details-card-action">-->
+<!--                                    @if (showReservationDetails) {-->
+<!--                                        <button mat-stroked-button (click)="checkin()">Fazer check-in</button>-->
+<!--                                    }-->
+<!--                                </div>-->
+<!--                            </mat-card>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </ng-container>-->
+<!--            </ng-container>-->
+<!--        </ng-container>-->
+<!--    </ng-container>-->
+<!--</ng-container>-->
+
+<!--    @for (room of roomList$ | async; track room.id) {-->
+<!--        <div class="eight">-->
+<!--            <mat-card class="room-card" appearance="outlined" [matTooltip]="room.status | titlecase" (click)="selectRoom(room)" matRipple>-->
+<!--                <mat-icon [class.text-green]="room.status === RoomStatus.free"-->
+<!--                          [class.text-orange]="room.status === RoomStatus.reserved"-->
+<!--                          [class.text-red]="room.status === RoomStatus.busy">meeting_room-->
+<!--                </mat-icon>-->
+<!--                <h4>Quarto {{ room.number }} </h4>-->
+<!--            </mat-card>-->
+<!--        </div>-->
+<!--    }-->

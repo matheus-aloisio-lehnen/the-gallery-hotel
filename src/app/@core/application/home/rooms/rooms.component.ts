@@ -1,28 +1,33 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatCardModule, } from "@angular/material/card";
-import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
-import { MatButtonModule } from "@angular/material/button";
-import { MatListModule } from "@angular/material/list";
-import { MatRippleModule } from "@angular/material/core";
-import { CurrencyPipe, DatePipe, formatDate, TitleCasePipe } from "@angular/common";
 import { Store } from "@ngrx/store";
 import { Router } from "@angular/router";
 import { LetDirective } from "@ngrx/component";
-import { MatTooltipModule } from "@angular/material/tooltip";
-import { MatExpansionModule } from "@angular/material/expansion";
-import { MatDialog } from "@angular/material/dialog";
-import { firstValueFrom } from "rxjs";
+import { Observable } from "rxjs";
+import { MatTableModule } from "@angular/material/table";
+import { MatFormFieldModule, } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatStepperModule, } from "@angular/material/stepper";
+import { NgxMaskDirective } from "ngx-mask";
+import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { CurrencyMaskModule } from "ng2-currency-mask";
+import { MatSelectModule } from "@angular/material/select";
+import { MatButtonModule } from "@angular/material/button";
+import { AsyncPipe, CurrencyPipe, TitleCasePipe } from "@angular/common";
 
 import { RoomStatus } from "../../../domain/enum/room-status.enum";
-import { Room } from "../../../domain/model/room";
-import { AppState } from "../../../infra/store/ngrx/state/app.state";
-import { Reservation } from "../../../domain/model/reservation";
-import { setRoom } from "../../../infra/store/ngrx/actions/room.actions";
-import { setReservation } from "../../../infra/store/ngrx/actions/reservation.actions";
-import { CpfPipe } from "../../../infra/utils/pipes/cpf.pipe";
-import { CheckInComponent } from "./dialogs/check-in/check-in.component";
-import { ReservationService } from "../reservations/service/reservation.service";
+import { Room } from "../../../domain/interface/room.interface";
+import { AppState } from "../../../domain/type/app-state.type";
+import { selectAllRooms } from "../../../infra/store/ngrx/selectors/room.selector";
+import { Icon } from "../../../domain/enum/icon.enum";
+import { Loading } from "../../../domain/enum/loading.enum";
+import { BaseComponent } from "../../shared/base/base.component";
+import { RoomService } from "../../../infra/services/service/room/room.service";
+
+import { RoomType } from "../../../domain/enum/room-type.enum";
+import { addRoomsToList } from "../../../infra/store/ngrx/actions/room.actions";
 
 
 @Component({
@@ -31,64 +36,88 @@ import { ReservationService } from "../reservations/service/reservation.service"
     styleUrl: './rooms.component.scss',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+
+    ],
     imports: [
-        MatButtonModule,
-        MatIconModule,
-        MatDividerModule,
         MatCardModule,
-        MatListModule,
-        MatTooltipModule,
-        MatRippleModule,
-        MatExpansionModule,
-        TitleCasePipe,
+        MatTableModule,
+        MatIconModule,
+        MatButtonModule,
+        MatProgressSpinner,
         LetDirective,
-        DatePipe,
+        TitleCasePipe,
+        MatStepperModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        NgxMaskDirective,
+        AsyncPipe,
+        CurrencyMaskModule,
         CurrencyPipe,
-        CpfPipe
     ],
 })
-export class RoomsComponent implements OnDestroy {
+export class RoomsComponent extends BaseComponent implements OnInit, OnDestroy {
 
-    protected readonly RoomStatusEnum: typeof RoomStatus;
+
+    protected readonly Icon = Icon;
+    protected readonly RoomType = RoomType;
+    loading$: Observable<boolean>;
+    showAddForm: boolean;
+    displayedColumns: string[];
+    roomList$: Observable<Room[]>;
+    roomForm: FormGroup;
 
     constructor(
-        private store: Store<AppState>,
-        private router: Router,
-        private dialog: MatDialog,
-        private reservationService: ReservationService
+        store: Store<AppState>,
+        router: Router,
+        private _formBuilder: FormBuilder,
+        private roomService: RoomService,
     ) {
-        this.RoomStatusEnum = RoomStatus;
+        super(store, router);
+        this.loading$ = this.store.select((appState: AppState) => appState.loading[Loading.getAllRooms] || appState.loading[Loading.addRoom] || appState.loading[Loading.deleteRoom]);
+        this.roomList$ = this.store.select(selectAllRooms);
+        this.showAddForm = false;
+        this.displayedColumns = [ 'id', 'price', 'description', 'status', 'actions' ];
+        this.roomForm = this._formBuilder.group({
+            price: [''],
+            description: ['']
+        })
     }
 
-    selectRoom(room: Room) {
-        this.store.dispatch(setRoom({ room: room }));
-        const selectedReservation = this.findReservation(room);
-        this.store.dispatch(setReservation({ reservation: selectedReservation }))
+    ngOnInit() {
+        this.roomService.getAll();
     }
 
-    findReservation(room: Room) {
-        const formattedToday = formatDate(new Date(), 'yyyy-MM-dd', 'pt-BR');
-        return room.reservations?.find((reservation: Reservation) => formattedToday >= formatDate(reservation.startDate, 'yyyy-MM-dd', 'pt-BR') && formattedToday <= formatDate(reservation.endDate, 'yyyy-MM-dd', 'pt-BR')) ?? null;
+    add() {
+        if (this.roomForm.invalid) {
+            this.roomForm.markAllAsTouched();
+            return;
+        }
+        this.roomService.add(this.roomForm.value)
+            .subscribe((data: Room) => {
+                if(!data.id) return;
+                this.roomForm.reset();
+                this.showAddForm = false;
+                this.roomService.getAll();
+            });
     }
 
-    async checkin(room: Room) {
-        const reservation = this.findReservation(room);
-        const result = reservation
-            ? await this.reservationService.checkin(reservation)
-            : await firstValueFrom(this.dialog.open(CheckInComponent).afterClosed());
-        // this.store.dispatch(updateRoomInList({ room: updatedRoom }));
-        // this.store.dispatch(setRoom({ room: null }));
+    delete(id: number) {
+        this.roomService.delete(id);
     }
 
-    async checkout(room: Room) {
-        const reservation = this.findReservation(room);
-        if(!reservation) return;
-        const result = await this.reservationService.checkout(reservation);
-        // this.store.dispatch(updateRoomInList({ room: updatedRoom }));
-        // this.store.dispatch(setRoom({ room: null }));
+    get description() {
+        return this.roomForm.get('description')
+    }
+
+    get price() {
+        return this.roomForm.get('price')
     }
 
     ngOnDestroy() {
-        this.store.dispatch(setRoom({ room: null }));
+        this.store.dispatch(addRoomsToList({roomList: []}))
     }
+
 }

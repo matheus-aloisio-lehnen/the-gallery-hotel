@@ -3,18 +3,10 @@ import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { Router } from "@angular/router";
 
-import { AppState } from "../../../infra/store/ngrx/state/app.state";
 import { toggleDarkMode } from "../../../infra/store/ngrx/actions/dark-mode.actions";
 import { RouteList } from "../../../domain/enum/route-list.enum";
-import { Room } from "../../../domain/model/room";
-import { Reservation } from "../../../domain/model/reservation";
-import { selectRoom, selectRoomList } from "../../../infra/store/ngrx/selectors/room.selector";
-import {
-    selectCheckout,
-    selectCheckoutList,
-    selectReservation,
-    selectReservationList
-} from "../../../infra/store/ngrx/selectors/reservation.selector";
+import { ErrorMessengerUtil } from "../../../infra/utils/form/messenger/error-messenger.util";
+import { AppState } from "../../../domain/type/app-state.type";
 
 @Component({
     selector: 'app-base',
@@ -23,7 +15,7 @@ import {
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BaseComponent {
+export class BaseComponent extends ErrorMessengerUtil {
 
 
     protected readonly RouteList = RouteList
@@ -33,11 +25,17 @@ export class BaseComponent {
         protected store: Store<AppState>,
         protected router: Router,
     ) {
+        super();
         this.isDarkMode$ = this.store.select((appState: AppState) => appState.isDarkMode);
     }
 
     changeThemeMode(isDarkMode: boolean): void {
         this.store.dispatch(toggleDarkMode(isDarkMode));
+    }
+
+    logout() {
+        this.router.navigate([ RouteList.signIn ])
+        // this.router.navigate([ '' ])
     }
 
 }

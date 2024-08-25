@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { NgxMaskDirective } from "ngx-mask";
-import { MatStepperModule, } from "@angular/material/stepper";
+import { MatStepper, MatStepperModule, } from "@angular/material/stepper";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -15,18 +15,21 @@ import { MatDialogModule, MatDialogRef, } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { CurrencyMaskModule } from "ng2-currency-mask";
-import { differenceInDays } from "date-fns";
+import { MatSelectModule } from "@angular/material/select";
+import { MatOptionModule } from "@angular/material/core";
+import { AsyncPipe, formatDate } from "@angular/common";
 
-import { AppState } from "../../../../../infra/store/ngrx/state/app.state";
 import { Loading } from "../../../../../domain/enum/loading.enum";
 import { ErrorMessengerUtil } from "../../../../../infra/utils/form/messenger/error-messenger.util";
-import { Room } from "../../../../../domain/model/room";
-import { selectRoom } from "../../../../../infra/store/ngrx/selectors/room.selector";
-import { ReservationService } from "../../service/reservation.service";
-import { RoomStatus } from "../../../../../domain/enum/room-status.enum";
-import { setRoom, updateRoomInList } from "../../../../../infra/store/ngrx/actions/room.actions";
 import { CPF_MASK, MOBILE_MASK, ZIPCODE_MASK } from "../../../../../infra/configs/mask.config";
-import { CreateReservationDto, createReservationDtoFactory } from "../../../../../domain/dto/reservation/create/create-reservation.dto";
+import { Room } from "../../../../../domain/interface/room.interface";
+import { AppState } from "../../../../../domain/type/app-state.type";
+import { selectAllRooms } from "../../../../../infra/store/ngrx/selectors/room.selector";
+import { ReservationService } from "../../../../../infra/services/service/reservation/reservation.service";
+import { addDays, format } from "date-fns";
+import { Role } from "../../../../../domain/enum/role.enum";
+import { CreateReservationDto } from "../../../../../domain/dto/reservation/create/create-reservation.dto";
+
 
 @Component({
     selector: 'app-add-reservation',
@@ -49,21 +52,27 @@ import { CreateReservationDto, createReservationDtoFactory } from "../../../../.
         MatDialogModule,
         MatToolbarModule,
         MatDividerModule,
-        CurrencyMaskModule
+        CurrencyMaskModule,
+        MatSelectModule,
+        MatOptionModule,
+        AsyncPipe
     ]
 })
 export class AddReservationComponent extends ErrorMessengerUtil {
 
 
+    @ViewChild('stepper') stepper!: MatStepper;
     protected readonly ZIPCODE_MASK: string;
     protected readonly CPF_MASK: string;
     protected readonly MOBILE_MASK: string;
     loading$: Observable<boolean>;
+    roomList$: Observable<Room[]>;
+    hide: boolean;
+    lastCheckAvailable: boolean;
     reservationForm: FormGroup;
+    authForm: FormGroup;
     personalDataForm: FormGroup;
     addressForm: FormGroup;
-    paymentForm: FormGroup;
-    room$: Observable<Room | null>;
     today: Date;
 
     constructor(
@@ -76,45 +85,76 @@ export class AddReservationComponent extends ErrorMessengerUtil {
         this.ZIPCODE_MASK = ZIPCODE_MASK;
         this.CPF_MASK = CPF_MASK;
         this.MOBILE_MASK = MOBILE_MASK;
-        this.loading$ = this.store.select((appState: AppState) => appState.loading[Loading.signUp])
-        this.room$ = this.store.select(selectRoom);
+        this.loading$ = this.store.select((appState: AppState) => appState.loading[Loading.addGuest])
+        this.roomList$ = this.store.select(selectAllRooms);
+        this.hide = true;
+        this.lastCheckAvailable = false;
         this.today = new Date();
+
         this.reservationForm = this.formBuilder.group({
-            startDate: [this.today, Validators.required],
-            endDate: [ '' ],
-            roomNumber: [ '' ],
+            roomId: [ 1 ],
+            startDate: [ this.today, Validators.required ],
+            endDate: [ format(addDays(this.today, 7), 'yyyy-MM-dd') ],
+        }, { updateOn: 'blur' });
+        this.authForm = this.formBuilder.group({
+            email: [ 'teste@hotmail.com', [ Validators.required, Validators.email ] ],
+            password: [ '123456', Validators.required ],
+            role: [ Role.guest, Validators.required ],
         }, { updateOn: 'blur' })
         this.personalDataForm = this.formBuilder.group({
-            name: [ '', Validators.required ],
-            documentNumber: [ '', Validators.required ],
-            mobile: [ '', Validators.required ],
+            name: [ 'c', Validators.required ],
+            documentNumber: [ '231.312.321-12', Validators.required ],
+            mobile: [ '(48) 94089-4321', Validators.required ],
         }, { updateOn: 'blur' })
         this.addressForm = this.formBuilder.group({
-            zipCode: [ '', Validators.required ],
-            street: [ '', Validators.required ],
-            number: [ '', Validators.required ],
-            city: [ '', Validators.required ],
-            uf: [ '', Validators.required ],
+            zipCode: [ '12312-312', Validators.required ],
+            street: [ 'c', Validators.required ],
+            number: [ 'c', Validators.required ],
+            city: [ 'c', Validators.required ],
+            uf: [ 'SC', [ Validators.required, Validators.minLength(2), Validators.maxLength(2) ] ],
         }, { updateOn: 'blur' });
-        this.paymentForm = this.formBuilder.group({
-            payment: [ '', Validators.required ],
-        }, { updateOn: 'blur' });
+
+        // this.reservationForm = this.formBuilder.group({
+        //     roomId: [ '' ],
+        //     startDate: [ '', Validators.required ],
+        //     endDate: [ '' ],
+        // }, { updateOn: 'blur' });
+        // this.authForm = this.formBuilder.group({
+        //     email: [ '', [ Validators.required, Validators.email ] ],
+        //     password: [ '', Validators.required ],
+        //     role: [ Role.guest, Validators.required ],
+        // }, { updateOn: 'blur' })
+        // this.personalDataForm = this.formBuilder.group({
+        //     name: [ '', Validators.required ],
+        //     documentNumber: [ '', Validators.required ],
+        //     mobile: [ '', Validators.required ],
+        // }, { updateOn: 'blur' })
+        // this.addressForm = this.formBuilder.group({
+        //     zipCode: [ '', Validators.required ],
+        //     street: [ '', Validators.required ],
+        //     number: [ '', Validators.required ],
+        //     city: [ '', Validators.required ],
+        //     uf: [ '', Validators.required ],
+        // }, { updateOn: 'blur' });
     }
 
-    async add(room: Room | null) {
-        if(!room) return;
-        if (await this.checkInvalidForm()) return;
-        const diffDays = differenceInDays(new Date(this.endDate?.value), new Date(this.startDate?.value)) + 1;
-        this.reservationForm.patchValue({ roomNumber: room.number });
-        this.paymentForm.patchValue({ payment: room.price * diffDays });
-
-        const createReservationDto: CreateReservationDto = createReservationDtoFactory(this.reservationForm, this.personalDataForm, this.addressForm, this.paymentForm);
-        await this.reservationService.add(createReservationDto);
-
-        const updatedRoom = { ...room, status: RoomStatus.busy };
-        this.store.dispatch(updateRoomInList({ room: updatedRoom }));
-        this.store.dispatch(setRoom({room: null}));
+    add() {
+        const createReservationDto: CreateReservationDto = {
+            startDate: format(this.startDate?.value, 'yyyy-MM-dd'),
+            endDate: format(this.endDate?.value, 'yyyy-MM-dd'),
+            roomId: this.roomId?.value,
+            personalData: this.personalDataForm.value,
+            address: this.addressForm.value,
+            email: this.email?.value,
+            password: this.password?.value,
+            role: Role.guest,
+        }
+        this.reservationService.add(createReservationDto)
         this.dialogRef.close(true);
+    }
+
+    get roomId() {
+        return this.reservationForm.get('roomId');
     }
 
     get startDate() {
@@ -123,6 +163,18 @@ export class AddReservationComponent extends ErrorMessengerUtil {
 
     get endDate() {
         return this.reservationForm.get('endDate');
+    }
+
+    get email() {
+        return this.authForm.get('email');
+    }
+
+    get password() {
+        return this.authForm.get('password');
+    }
+
+    get role() {
+        return this.authForm.get('role');
     }
 
     get name() {
@@ -157,10 +209,6 @@ export class AddReservationComponent extends ErrorMessengerUtil {
         return this.addressForm.get('uf');
     }
 
-    get payment() {
-        return this.paymentForm.get('payment');
-    }
-
     onStartDateChange() {
         this.startDate?.value !== this.today && this.startDate?.patchValue(this.today);
     }
@@ -184,4 +232,14 @@ export class AddReservationComponent extends ErrorMessengerUtil {
         return hasInvalidForm;
     }
 
+    async checkAvailability() {
+        const startDateStr = formatDate(this.startDate?.value, 'yyyy-MM-dd', 'pt-BR');
+        const endDateStr = formatDate(this.endDate?.value, 'yyyy-MM-dd', 'pt-BR')
+        const queryParams = `?roomId=${ this.roomId?.value }&startDate=${ startDateStr }&endDate=${ endDateStr }`;
+        const isAvailable = await this.reservationService.isRoomAvailable(queryParams);
+        this.lastCheckAvailable = isAvailable;
+        if (isAvailable) {
+            this.stepper.next();
+        }
+    }
 }

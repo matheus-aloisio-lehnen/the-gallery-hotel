@@ -20,8 +20,6 @@
                 margin-top: -20px;
                 margin-right: 15px;
                 float: left;
-                @include mat.elevation(6);
-                cursor: pointer;
                 transition: opacity 0.3s;
                 .mat-icon {
                     font-size: 36px;
@@ -31,9 +29,6 @@
                     text-align: center;
                     color: #ffffff;
                 }
-            }
-            .box-icon:hover {
-                @include mat.elevation(12);
             }
         }
         .mat-divider {

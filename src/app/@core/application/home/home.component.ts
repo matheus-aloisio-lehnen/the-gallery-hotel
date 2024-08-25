@@ -8,16 +8,14 @@ import { MatListModule } from "@angular/material/list";
 import { LetDirective } from "@ngrx/component";
 import { NgOptimizedImage } from "@angular/common";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { Observable } from "rxjs";
 import { Router, RouterModule } from "@angular/router";
 import { Store } from "@ngrx/store";
 
 import { Sidenav } from "../../domain/type/sidenav.type";
-import { AppState } from "../../infra/store/ngrx/state/app.state";
 import { SIDENAV } from "../../domain/constants/sidenav.constant";
 import { ReservationService } from "./reservations/service/reservation.service";
-import { ConfigService } from "../../infra/services/config/config.service";
-import { RouteList } from "../../domain/enum/route-list.enum";
+import { BaseComponent } from "../shared/base/base.component";
+import { AppState } from "../../domain/type/app-state.type";
 
 @Component({
     selector: 'app-home',
@@ -38,28 +36,21 @@ import { RouteList } from "../../domain/enum/route-list.enum";
         NgOptimizedImage
     ]
 })
-export class HomeComponent {
+export class HomeComponent extends BaseComponent {
 
 
-    isDarkMode$: Observable<boolean>;
     navHovered: boolean;
     sidenav: Sidenav[];
 
     constructor(
-        private router: Router,
-        private store: Store<AppState>,
-        protected configService: ConfigService,
+        store: Store<AppState>,
+        router: Router,
         private reservationService: ReservationService,
     ) {
-        this.isDarkMode$ = this.store.select((appState: AppState) => appState.isDarkMode);
+        super(store, router);
         this.navHovered = false;
         this.sidenav = SIDENAV;
         this.reservationService.getReservations();
-    }
-
-    logout() {
-        this.router.navigate([ RouteList.signIn ])
-        // this.router.navigate([ '' ])
     }
 
 }

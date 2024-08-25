@@ -1,41 +1,31 @@
 import { createAction, props } from '@ngrx/store';
-import { Room } from "../../../../domain/model/room";
+import { Room } from "../../../../domain/interface/room.interface";
 
-export const createRoom = createAction(
-    '[Room] Create Room',
+export const selectRoom = createAction(
+    '[Room] Select Room',
+    props<{ id: number }>()
+);
+
+export const deselectRoom = createAction('[Room] Deselect Room',);
+
+export const addRoomsToList = createAction(
+    '[Room] Add rooms to List',
+    props<{ roomList: Room[] }>()
+);
+
+export const clearRooms = createAction('[Room] Clear Companies');
+
+export const addRoom = createAction(
+    '[Item] Add Room',
     props<{ room: Room }>()
 );
 
 export const updateRoom = createAction(
     '[Room] Update Room',
     props<{ room: Room }>()
-);
+)
 
 export const deleteRoom = createAction(
-    '[Room] Delete Room'
-);
-
-export const setRoom = createAction(
-    '[Room] Set Room',
-    props<{ room: Room | null }>()
-);
-
-export const addRoomToList = createAction(
-    '[Room] Add Room to List',
-    props<{ room: Room }>()
-);
-
-export const updateRoomInList = createAction(
-    '[Room] Update Room in List',
-    props<{ room: Room }>()
-);
-
-export const removeRoomFromList = createAction(
-    '[Room] Remove Room from List',
+    '[Room] Delete Room',
     props<{ id: number }>()
-);
-
-export const setRoomList = createAction(
-    '[Room] Set Room List',
-    props<{ roomList: Room[] }>()
 );

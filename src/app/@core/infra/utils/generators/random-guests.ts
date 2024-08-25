@@ -1,7 +1,7 @@
-import { Guest } from "../../../domain/model/guest";
 import { getRandomName } from "./random-name";
 import { getRandomCpf } from "./random-cpf";
 import { getRandomInt } from "./random-int";
+import { Guest } from "../../../domain/interface/guest.interface";
 
 export const generateRandomGuests = (): Guest[] => {
     return Array.from({ length: 30 }, (_, i) => ({

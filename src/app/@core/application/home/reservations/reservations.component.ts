@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatCardModule } from "@angular/material/card";
-import { MatTableModule } from "@angular/material/table";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
-import { DatePipe, formatDate, TitleCasePipe } from "@angular/common";
+import { AsyncPipe, DatePipe, formatDate, TitleCasePipe } from "@angular/common";
 import { LetDirective } from "@ngrx/component";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
@@ -10,20 +10,30 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { CurrencyMaskModule } from "ng2-currency-mask";
+import { MatFormFieldModule, } from "@angular/material/form-field";
+import { ReactiveFormsModule } from "@angular/forms";
+import { Observable, Subscription } from "rxjs";
+import { NgxMaskDirective } from "ngx-mask";
 
 import { MONTHS } from "../../../domain/constants/months.constants";
 import { MonthType } from "../../../domain/type/month.type";
-import { ROOMS } from "../../../domain/mock/rooms.mock";
-import { Room } from "../../../domain/model/room";
-import { AppState } from "../../../infra/store/ngrx/state/app.state";
-import { Reservation } from "../../../domain/model/reservation";
 import { generateColor } from "../../../infra/utils/colors/color-generator";
 import { AddReservationComponent } from "./dialogs/add-reservation/add-reservation.component";
 import { DeleteReservationComponent } from "./dialogs/delete-reservation/delete-reservation.component";
-import { setRoom, setRoomList } from "../../../infra/store/ngrx/actions/room.actions";
-import { setReservation } from "../../../infra/store/ngrx/actions/reservation.actions";
-import { EditReservationComponent } from "./dialogs/edit-reservation/edit-reservation.component";
-import { generateRandomReservations } from "../../../infra/utils/generators/random-reservation";
+import { Room } from "../../../domain/interface/room.interface";
+import { Reservation } from "../../../domain/interface/reservation.interface";
+import { AppState } from "../../../domain/type/app-state.type";
+import { BaseComponent } from "../../shared/base/base.component";
+import { ReservationService } from "../../../infra/services/service/reservation/reservation.service";
+import { Loading } from "../../../domain/enum/loading.enum";
+import { hasRooms, selectAllRooms, selectSelectedRoom } from "../../../infra/store/ngrx/selectors/room.selector";
+import { RoomService } from "../../../infra/services/service/room/room.service";
+import { selectRoom } from "../../../infra/store/ngrx/actions/room.actions";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { MatStepperModule } from "@angular/material/stepper";
 
 @Component({
     selector: 'app-reservations',
@@ -40,34 +50,47 @@ import { generateRandomReservations } from "../../../infra/utils/generators/rand
         MatIconModule,
         MatButtonModule,
         TitleCasePipe,
-        DatePipe
+        DatePipe,
+        MatProgressSpinner,
+        CurrencyMaskModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatSelectModule,
+        MatStepperModule,
+        NgxMaskDirective,
+        AsyncPipe
     ]
 })
-export class ReservationsComponent implements OnDestroy {
+export class ReservationsComponent extends BaseComponent implements OnInit {
 
+
+    loading$: Observable<boolean>;
     @ViewChild(MatTabGroup) tabs!: MatTabGroup;
     protected readonly months: MonthType[];
     selectedMonth: number;
     displayedColumns: string[];
-
     today: string;
+    roomList$: Observable<Room[]>;
+    selectedReservation?: Reservation | null;
 
     constructor(
-        private store: Store<AppState>,
-        private router: Router,
-        private dialog: MatDialog
+        store: Store<AppState>,
+        router: Router,
+        private dialog: MatDialog,
+        private reservationService: ReservationService,
     ) {
+        super(store, router);
+        this.loading$ = this.store.select((appState: AppState) => appState.loading[Loading.getAllRooms] || appState.loading[Loading.addRoom] || appState.loading[Loading.deleteRoom]);
+        this.roomList$ = this.store.select(selectAllRooms);
         this.months = MONTHS;
         this.selectedMonth = new Date().getMonth();
         this.displayedColumns = this.getDisplayedColumns(this.selectedMonth + 1);
-        this.store.dispatch(setRoom({ room: null}))
         this.today = formatDate(new Date(), 'dd', 'pt-BR');
     }
 
-    onTabChange() {
-        const month = this.selectedMonth + 1;
-        this.store.dispatch(setRoomList({ roomList: generateRandomReservations(month, ROOMS.length) }))
-        this.displayedColumns = this.getDisplayedColumns(month);
+    ngOnInit() {
+        this.reservationService.getAllByMonth(this.selectedMonth + 1);
     }
 
     getDisplayedColumns(month: number): any[] {
@@ -81,68 +104,60 @@ export class ReservationsComponent implements OnDestroy {
         return columns;
     }
 
-    getTableText(column: string, room: Room) {
-        if (column === 'room') return room.number;
-        return this.isStartDate(column, room) || this.isEndDate(column, room) ? this.findReservation(column, room)?.guest?.personalData?.name : '';
+    onTabChange() {
+        const month = this.selectedMonth + 1;
+        this.displayedColumns = this.getDisplayedColumns(month);
+        this.reservationService.getAllByMonth(month);
     }
 
-    showDetails(column: string, room: Room) {
-        this.store.dispatch(setRoom({ room: room }));
-        this.store.dispatch(setReservation( { reservation: this.findReservation(column, room)}))
-    }
-
-    findReservation(column: string, room: Room) {
-        const selectedDate = new Date(new Date().getFullYear(), this.selectedMonth, Number(column));
-        return room.reservations?.find(reservation => selectedDate >= reservation.startDate && selectedDate <= reservation.endDate) ?? null;
-    }
-
-    hasReservation(column: string, element: Room) {
-        if (column === 'room') return false;
-        return this.findReservation(column, element)
-    }
-
-    isStartDate(column: string, room: Room) {
-        if (column === 'room') return false;
-        const selectedDate = formatDate(new Date(new Date().getFullYear(), this.selectedMonth, Number(column)), 'yyyy-MM-dd', 'pt-BR');
+    getGuestName(column: string, room: Room, hasReservation: boolean) {
+        if (column === 'room') return room.id;
+        if(!hasReservation) return '';
         const reservation = this.findReservation(column, room);
+        return reservation?.user?.personalData?.name;
+    }
+
+    showDetails(day: string, room: Room) {
+        this.selectedReservation = this.findReservation(day, room);
+    }
+
+    findReservation(day: string, room: Room) {
+        const selectedDate = new Date(new Date().getFullYear(), this.selectedMonth, Number(day));
+        const selectedDateStr = formatDate(selectedDate, 'yyyy-MM-dd', 'pt-BR');
+        return room.reservations?.find(reservation => selectedDateStr >= reservation.startDate && selectedDateStr <= reservation.endDate) ?? null;
+    }
+
+    isStartDate(day: string, room: Room) {
+        if (day === 'room') return false;
+        const selectedDate = formatDate(new Date(new Date().getFullYear(), this.selectedMonth, Number(day)), 'yyyy-MM-dd', 'pt-BR');
+        const reservation = this.findReservation(day, room);
         if(!reservation) return false;
         return selectedDate === formatDate(reservation.startDate, 'yyyy-MM-dd', 'pt-BR');
     }
 
-    isEndDate(column: string, room: Room) {
-        if (column === 'room') return false;
-
-        const selectedDate = formatDate(new Date(new Date().getFullYear(), this.selectedMonth, Number(column)), 'yyyy-MM-dd', 'pt-BR');
-        const reservation = this.findReservation(column, room);
+    isEndDate(day: string, room: Room) {
+        if (day === 'room') return false;
+        const selectedDate = formatDate(new Date(new Date().getFullYear(), this.selectedMonth, Number(day)), 'yyyy-MM-dd', 'pt-BR');
+        const reservation = this.findReservation(day, room);
         if(!reservation) return false;
         return selectedDate === formatDate(reservation.endDate, 'yyyy-MM-dd', 'pt-BR');
     }
 
-    getColor(column: string, room: Room) {
-        const guestName = this.findReservation(column, room)?.guest?.personalData?.name;
-
+    getColor(day: string, room: Room) {
+        if (day === 'room') return;
+        const guestName = this.findReservation(day, room)?.user?.personalData?.name;
         if (!guestName) return;
         return generateColor(guestName)
     }
 
     add() {
-        this.dialog.open(AddReservationComponent);
+        this.dialog.open(AddReservationComponent)
     }
 
-    edit(reservation: Reservation) {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.data = reservation;
-        this.dialog.open(EditReservationComponent, dialogConfig)
-    }
-
-    delete(reservation: Reservation) {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.data = reservation;
-        this.dialog.open(DeleteReservationComponent, dialogConfig);
-    }
-
-    ngOnDestroy() {
-        this.store.dispatch(setReservation( { reservation: null }));
+    delete() {
+        if(!this.selectedReservation || !this.selectedReservation.id) return;
+        this.reservationService.delete(this.selectedReservation.id);
+        this.selectedReservation = undefined;
     }
 
 }

@@ -1,8 +1,9 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Store } from "@ngrx/store";
-import { catchError, finalize, firstValueFrom, Observable, of, tap } from "rxjs";
+import { catchError, finalize, first, firstValueFrom, Observable, of, tap } from "rxjs";
+import { Injectable } from "@angular/core";
+
 import * as LoadingActions from "../../../store/ngrx/actions/loading.actions";
-import { inject, Injectable } from "@angular/core";
 import { MessengerService } from "../../messenger/messenger.service";
 import { SNACKBAR } from "../../../configs/mat-snackbar.config";
 import { ErrorHandlerService } from "../error-handler/error-handler.service";
@@ -32,8 +33,10 @@ export class HttpAdapter {
     private handleResponse = <T>(response: Observable<T>, context: string, returnPromise: boolean): Observable<T> | Promise<T> => {
         this.store.dispatch(LoadingActions.startLoading({ context }));
         const request = response.pipe(
-            tap((response: any) => response && this.messenger.send(response.message, undefined, SNACKBAR.success)),
+            first(),
+            tap((response: any) => response && response.message && this.messenger.send(response.message, undefined, SNACKBAR.success)),
             catchError((httpError: HttpErrorResponse) => {
+                console.log(httpError);
                 this.errorHandler.handleError(httpError);
                 return of({ data: false })
             }),
