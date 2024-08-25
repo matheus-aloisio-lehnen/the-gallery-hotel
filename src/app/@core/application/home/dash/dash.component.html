@@ -1,141 +1,149 @@
 <ng-container *ngrxLet="summaryCard$ as summaryCard">
-    <div class="container">
-        <div class="full">
-            <h3>Dashboard</h3>
-        </div>
-        <div class="full flex-wrapper">
-            <div>
-                <mat-card class="dashboard-card" appearance="outlined">
-                    <div class="dashboard-card-header">
-                        <div class="box-icon bg-blue">
-                            <mat-icon class="i-2xl">bed</mat-icon>
-                        </div>
-                        <p>Quartos vagos</p>
-                        <h3> {{ summaryCard ? summaryCard.freeRooms : 0 }}</h3>
-                    </div>
-                    <mat-divider></mat-divider>
-                    <div class="dashboard-card-footer">
-                        <div class="stats">
-                            <mat-icon class="i-xs">open_in_new</mat-icon>
-                            Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
-                        </div>
-                    </div>
-                </mat-card>
+    <ng-container *ngrxLet="loading$ as loading">
+        <div class="container">
+            <div class="full">
+                <h3>Dashboard</h3>
             </div>
-            <div>
-                <mat-card class="dashboard-card" appearance="outlined">
-                    <div class="dashboard-card-header">
-                        <div class="box-icon bg-red">
-                            <mat-icon class="i-2xl">flight_takeoff</mat-icon>
-                        </div>
-                        <p>Check-outs para hoje</p>
-                        <h3> {{ summaryCard ? summaryCard.outs : 0 }}</h3>
-                    </div>
-                    <mat-divider></mat-divider>
-                    <div class="dashboard-card-footer">
-                        <div class="stats">
-                            <mat-icon class="i-xs">open_in_new</mat-icon>
-                            Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
-                        </div>
-                    </div>
-                </mat-card>
+            @if(loading) {
+            <div class="full spinner">
+                <mat-spinner></mat-spinner>
             </div>
-            <div>
-                <mat-card class="dashboard-card" appearance="outlined">
-                    <div class="dashboard-card-header">
-                        <div class="box-icon bg-orange">
-                            <mat-icon class="i-2xl">flight_land</mat-icon>
-                        </div>
-                        <p>Check-ins para hoje</p>
-                        <h3> {{ summaryCard ? summaryCard.ins : 0 }}</h3>
+            } @else {
+                <div class="full flex-wrapper">
+                    <div>
+                        <mat-card class="dashboard-card" appearance="outlined">
+                            <div class="dashboard-card-header">
+                                <div class="box-icon bg-blue">
+                                    <mat-icon class="i-2xl">bed</mat-icon>
+                                </div>
+                                <p>Quartos vagos</p>
+                                <h3> {{ summaryCard ? summaryCard.freeRooms : 0 }}</h3>
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div class="dashboard-card-footer">
+                                <div class="stats">
+                                    <mat-icon class="i-xs">open_in_new</mat-icon>
+                                    Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
+                                </div>
+                            </div>
+                        </mat-card>
                     </div>
-                    <mat-divider></mat-divider>
-                    <div class="dashboard-card-footer">
-                        <div class="stats">
-                            <mat-icon class="i-xs">open_in_new</mat-icon>
-                            Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
-                        </div>
+                    <div>
+                        <mat-card class="dashboard-card" appearance="outlined">
+                            <div class="dashboard-card-header">
+                                <div class="box-icon bg-red">
+                                    <mat-icon class="i-2xl">flight_takeoff</mat-icon>
+                                </div>
+                                <p>Check-outs para hoje</p>
+                                <h3> {{ summaryCard ? summaryCard.outs : 0 }}</h3>
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div class="dashboard-card-footer">
+                                <div class="stats">
+                                    <mat-icon class="i-xs">open_in_new</mat-icon>
+                                    Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
+                                </div>
+                            </div>
+                        </mat-card>
                     </div>
-                </mat-card>
-            </div>
-        </div>
-    </div>
-    <div class="flex-wrapper">
-        @for (room of roomList$ | async; track room.id) {
-            <mat-card class="room-card" appearance="outlined"
-                      [matTooltip]="room.status | titlecase"
-                      (click)="selectedRoom = room" matRipple>
-                <mat-icon class="text-green"
-                          [class.text-orange]="room.status === RoomStatus.reserved"
-                          [class.text-red]="room.status === RoomStatus.busy">door_back
-                </mat-icon>
-                <h4>Quarto {{ room.id }} </h4>
-            </mat-card>
-        }
-    </div>
-    @defer (when selectedRoom) {
-        <div class="full">
-            @switch (selectedRoom?.status) {
-                @case (RoomStatus.reserved) {
-                    <mat-card class="room-details" appearance="outlined">
-                        <mat-card-header>
-                            <mat-card-title> Informações da reserva</mat-card-title>
-                        </mat-card-header>
-                        <mat-card-content class="details-body">
-                            <p>Quarto {{ selectedRoom?.id }}</p>
-                            <p>Status: {{ selectedRoom?.status | titlecase }}</p>
-                            <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>
-                            <p>Data de entrada: {{ selectedRoom?.reservation?.startDate | date: 'dd-MM-yyyy' }} </p>
-                            <p>Data de saída: {{ selectedRoom?.reservation?.endDate | date: 'dd-MM-yyyy' }} </p>
-                            <p>Hóspede: {{ selectedRoom?.reservation?.user?.personalData?.name | titlecase }} </p>
-                            <p>CPF: {{ selectedRoom?.reservation?.user?.personalData?.documentNumber | cpf }} </p>
-                            <p>Rua: {{ selectedRoom?.reservation?.user?.address?.street }} </p>
-                            <p>Cidade: {{ selectedRoom?.reservation?.user?.address?.city }} </p>
-                            <p>UF: {{ selectedRoom?.reservation?.user?.address?.uf }} </p>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <button mat-stroked-button (click)="checkin()">Fazer check-in</button>
-                        </mat-card-actions>
-                    </mat-card>
-                }
-                @case (RoomStatus.busy) {
-                    <mat-card class="room-details" appearance="outlined">
-                        <mat-card-header>
-                            <mat-card-title> Informações do quarto</mat-card-title>
-                        </mat-card-header>
-                        <mat-card-content class="details-body">
-                            <p>Quarto {{ selectedRoom?.id }}</p>
-                            <p>Status: {{ selectedRoom?.status | titlecase }}</p>
-                            <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>
-                            <p>Data de entrada: {{ selectedRoom?.reservation?.startDate | date: 'dd-MM-yyyy' }} </p>
-                            <p>Data de saída: {{ selectedRoom?.reservation?.endDate | date: 'dd-MM-yyyy' }} </p>
-                            <p>Hóspede: {{ selectedRoom?.reservation?.user?.personalData?.name | titlecase }} </p>
-                            <p>CPF: {{ selectedRoom?.reservation?.user?.personalData?.documentNumber | cpf }} </p>
-                            <p>Rua: {{ selectedRoom?.reservation?.user?.address?.street }} </p>
-                            <p>Cidade: {{ selectedRoom?.reservation?.user?.address?.city }} </p>
-                            <p>UF: {{ selectedRoom?.reservation?.user?.address?.uf }} </p>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <button mat-stroked-button (click)="checkout()">Fazer check-out</button>
-                        </mat-card-actions>
-                    </mat-card>
-                }
-                @case (RoomStatus.free) {
-                    <mat-card class="room-details" appearance="outlined">
-                        <mat-card-header>
-                            <mat-card-title> Informações do quarto</mat-card-title>
-                        </mat-card-header>
-                        <mat-card-content class="details-body">
-                            <p>Quarto {{ selectedRoom?.id }}</p>
-                            <p>Status: {{ selectedRoom?.status | titlecase }}</p>
-                            <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <button mat-stroked-button (click)="checkin()">Fazer check-in</button>
-                        </mat-card-actions>
-                    </mat-card>
+                    <div>
+                        <mat-card class="dashboard-card" appearance="outlined">
+                            <div class="dashboard-card-header">
+                                <div class="box-icon bg-orange">
+                                    <mat-icon class="i-2xl">flight_land</mat-icon>
+                                </div>
+                                <p>Check-ins para hoje</p>
+                                <h3> {{ summaryCard ? summaryCard.ins : 0 }}</h3>
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div class="dashboard-card-footer">
+                                <div class="stats">
+                                    <mat-icon class="i-xs">open_in_new</mat-icon>
+                                    Atualizado em: {{ now | date: 'dd-MM-yyyy HH:mm:ss' }}
+                                </div>
+                            </div>
+                        </mat-card>
+                    </div>
+                </div>
+                <div class="full flex-wrapper">
+                    @for (room of roomList$ | async; track room.id) {
+                        <mat-card class="room-card" appearance="outlined"
+                                  [matTooltip]="room.status | titlecase"
+                                  (click)="selectedRoom = room" matRipple>
+                            <mat-icon class="text-green"
+                                      [class.text-orange]="room.status === RoomStatus.reserved"
+                                      [class.text-red]="room.status === RoomStatus.busy">door_back
+                            </mat-icon>
+                            <h4>Quarto {{ room.id }} </h4>
+                        </mat-card>
+                    }
+                </div>
+                @defer (when selectedRoom) {
+                    <div class="full">
+                        @switch (selectedRoom?.status) {
+                            @case (RoomStatus.reserved) {
+                                <mat-card class="room-details" appearance="outlined">
+                                    <mat-card-header>
+                                        <mat-card-title> Informações da reserva</mat-card-title>
+                                    </mat-card-header>
+                                    <mat-card-content class="details-body">
+                                        <p>Quarto {{ selectedRoom?.id }}</p>
+                                        <p>Status: {{ selectedRoom?.status | titlecase }}</p>
+                                        <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>
+                                        <p>Data de entrada: {{ selectedRoom?.reservation?.startDate | date: 'dd-MM-yyyy' }} </p>
+                                        <p>Data de saída: {{ selectedRoom?.reservation?.endDate | date: 'dd-MM-yyyy' }} </p>
+                                        <p>Hóspede: {{ selectedRoom?.reservation?.user?.personalData?.name | titlecase }} </p>
+                                        <p>CPF: {{ selectedRoom?.reservation?.user?.personalData?.documentNumber | cpf }} </p>
+                                        <p>Rua: {{ selectedRoom?.reservation?.user?.address?.street }} </p>
+                                        <p>Cidade: {{ selectedRoom?.reservation?.user?.address?.city }} </p>
+                                        <p>UF: {{ selectedRoom?.reservation?.user?.address?.uf }} </p>
+                                    </mat-card-content>
+                                    <mat-card-actions>
+                                        <button mat-stroked-button (click)="checkin()">Fazer check-in</button>
+                                    </mat-card-actions>
+                                </mat-card>
+                            }
+                            @case (RoomStatus.busy) {
+                                <mat-card class="room-details" appearance="outlined">
+                                    <mat-card-header>
+                                        <mat-card-title> Informações do quarto</mat-card-title>
+                                    </mat-card-header>
+                                    <mat-card-content class="details-body">
+                                        <p>Quarto {{ selectedRoom?.id }}</p>
+                                        <p>Status: {{ selectedRoom?.status | titlecase }}</p>
+                                        <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>
+                                        <p>Data de entrada: {{ selectedRoom?.reservation?.startDate | date: 'dd-MM-yyyy' }} </p>
+                                        <p>Data de saída: {{ selectedRoom?.reservation?.endDate | date: 'dd-MM-yyyy' }} </p>
+                                        <p>Hóspede: {{ selectedRoom?.reservation?.user?.personalData?.name | titlecase }} </p>
+                                        <p>CPF: {{ selectedRoom?.reservation?.user?.personalData?.documentNumber | cpf }} </p>
+                                        <p>Rua: {{ selectedRoom?.reservation?.user?.address?.street }} </p>
+                                        <p>Cidade: {{ selectedRoom?.reservation?.user?.address?.city }} </p>
+                                        <p>UF: {{ selectedRoom?.reservation?.user?.address?.uf }} </p>
+                                    </mat-card-content>
+                                    <mat-card-actions>
+                                        <button mat-stroked-button (click)="checkout()">Fazer check-out</button>
+                                    </mat-card-actions>
+                                </mat-card>
+                            }
+                            @case (RoomStatus.free) {
+                                <mat-card class="room-details" appearance="outlined">
+                                    <mat-card-header>
+                                        <mat-card-title> Informações do quarto</mat-card-title>
+                                    </mat-card-header>
+                                    <mat-card-content class="details-body">
+                                        <p>Quarto {{ selectedRoom?.id }}</p>
+                                        <p>Status: {{ selectedRoom?.status | titlecase }}</p>
+                                        <p>Diária: {{ selectedRoom?.price | currency: 'BRL' }}</p>
+                                    </mat-card-content>
+                                    <mat-card-actions>
+                                        <button mat-stroked-button (click)="checkin()">Fazer check-in</button>
+                                    </mat-card-actions>
+                                </mat-card>
+                            }
+                        }
+                    </div>
                 }
             }
         </div>
-    }
+    </ng-container>
 </ng-container>

@@ -17,7 +17,6 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatButtonModule } from "@angular/material/button";
 import { AsyncPipe, CurrencyPipe, TitleCasePipe } from "@angular/common";
 
-import { RoomStatus } from "../../../domain/enum/room-status.enum";
 import { Room } from "../../../domain/interface/room.interface";
 import { AppState } from "../../../domain/type/app-state.type";
 import { selectAllRooms } from "../../../infra/store/ngrx/selectors/room.selector";
@@ -25,7 +24,6 @@ import { Icon } from "../../../domain/enum/icon.enum";
 import { Loading } from "../../../domain/enum/loading.enum";
 import { BaseComponent } from "../../shared/base/base.component";
 import { RoomService } from "../../../infra/services/service/room/room.service";
-
 import { RoomType } from "../../../domain/enum/room-type.enum";
 import { addRoomsToList } from "../../../infra/store/ngrx/actions/room.actions";
 
