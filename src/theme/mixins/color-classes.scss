@@ -271,7 +271,12 @@
     }
 
     .bg-container {
-        background-color: $light-primary !important;
+        @if($type == 'dark') {
+            background-color: #2d3131 !important;
+        } @else {
+            background-color: #ecf0ff !important;
+        }
+
     }
 
     ::-webkit-scrollbar {

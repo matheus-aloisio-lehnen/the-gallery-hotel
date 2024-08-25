@@ -12,8 +12,7 @@ export enum Loading {
     getAllReservationsByMonth = 'getAllReservationsByMonth',
     addReservation = 'addReservation',
     deleteReservation = 'deleteReservation',
-
-
-
     getDash = 'getDash',
+    checkout = 'checkout',
+    checkin = 'checkin',
 }

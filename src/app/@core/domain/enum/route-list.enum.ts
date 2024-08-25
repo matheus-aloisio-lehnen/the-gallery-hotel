@@ -8,4 +8,6 @@ export enum RouteList {
     rooms = 'rooms',
     reservations = 'reservations',
     staff = 'staff',
+    searchReservation = 'search-reservation',
+    searchCheckout = 'checkout-search',
 }

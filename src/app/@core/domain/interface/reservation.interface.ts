@@ -8,5 +8,6 @@ export interface Reservation {
     endDate: Date | string,
     room: Room,
     qrCode: string,
-    qrCodeStatus: boolean
+    qrCodeStatus: boolean,
+    checkedOut: boolean
 }

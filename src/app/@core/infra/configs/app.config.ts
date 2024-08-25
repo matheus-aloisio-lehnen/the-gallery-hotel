@@ -42,6 +42,7 @@ export const appConfig: ApplicationConfig = {
         { provide: MAT_CARD_CONFIG, useValue: MAT_CARD_DEFAULT_CONFIG },
         { provide: MAT_PAGINATOR_DEFAULT_OPTIONS, useValue: MAT_PAGINATOR_DEFAULT_CONFIG },
         { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: MAT_TOOLTIP_CONFIG },
+        { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
         { provide: CURRENCY_MASK_CONFIG, useValue: CURRENCY_MASK }
     ]
 };

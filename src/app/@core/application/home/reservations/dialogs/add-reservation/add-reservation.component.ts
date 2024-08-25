@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -11,13 +11,14 @@ import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { LetDirective } from "@ngrx/component";
-import { MatDialogModule, MatDialogRef, } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef, } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import { MatSelectModule } from "@angular/material/select";
 import { MatOptionModule } from "@angular/material/core";
 import { AsyncPipe, formatDate } from "@angular/common";
+import { format, isBefore, startOfDay } from "date-fns";
 
 import { Loading } from "../../../../../domain/enum/loading.enum";
 import { ErrorMessengerUtil } from "../../../../../infra/utils/form/messenger/error-messenger.util";
@@ -26,9 +27,9 @@ import { Room } from "../../../../../domain/interface/room.interface";
 import { AppState } from "../../../../../domain/type/app-state.type";
 import { selectAllRooms } from "../../../../../infra/store/ngrx/selectors/room.selector";
 import { ReservationService } from "../../../../../infra/services/service/reservation/reservation.service";
-import { addDays, format } from "date-fns";
 import { Role } from "../../../../../domain/enum/role.enum";
 import { CreateReservationDto } from "../../../../../domain/dto/reservation/create/create-reservation.dto";
+import { Reservation } from "../../../../../domain/interface/reservation.interface";
 
 
 @Component({
@@ -75,7 +76,9 @@ export class AddReservationComponent extends ErrorMessengerUtil {
     addressForm: FormGroup;
     today: Date;
 
+
     constructor(
+        @Inject(MAT_DIALOG_DATA) public data: any,
         private reservationService: ReservationService,
         private formBuilder: FormBuilder,
         private store: Store<AppState>,
@@ -90,11 +93,10 @@ export class AddReservationComponent extends ErrorMessengerUtil {
         this.hide = true;
         this.lastCheckAvailable = false;
         this.today = new Date();
-
         this.reservationForm = this.formBuilder.group({
-            roomId: [ 1 ],
+            roomId: [ data.context === 'checkin' ? data.room.id : '' ],
             startDate: [ this.today, Validators.required ],
-            endDate: [ format(addDays(this.today, 7), 'yyyy-MM-dd') ],
+            endDate: [''],
         }, { updateOn: 'blur' });
         this.authForm = this.formBuilder.group({
             email: [ 'teste@hotmail.com', [ Validators.required, Validators.email ] ],
@@ -115,7 +117,7 @@ export class AddReservationComponent extends ErrorMessengerUtil {
         }, { updateOn: 'blur' });
 
         // this.reservationForm = this.formBuilder.group({
-        //     roomId: [ '' ],
+        //        roomId: [ data.context === 'checkin' ? data.room.id : '' ],
         //     startDate: [ '', Validators.required ],
         //     endDate: [ '' ],
         // }, { updateOn: 'blur' });
@@ -139,6 +141,7 @@ export class AddReservationComponent extends ErrorMessengerUtil {
     }
 
     add() {
+        if(this.checkInvalidForm()) return;
         const createReservationDto: CreateReservationDto = {
             startDate: format(this.startDate?.value, 'yyyy-MM-dd'),
             endDate: format(this.endDate?.value, 'yyyy-MM-dd'),
@@ -150,7 +153,12 @@ export class AddReservationComponent extends ErrorMessengerUtil {
             role: Role.guest,
         }
         this.reservationService.add(createReservationDto)
-        this.dialogRef.close(true);
+            .subscribe((data: Reservation) => {
+                const month = new Date().getMonth() + 1;
+                this.reservationService.getAllByMonth(month)
+                this.dialogRef.close(data);
+            })
+
     }
 
     get roomId() {
@@ -209,14 +217,36 @@ export class AddReservationComponent extends ErrorMessengerUtil {
         return this.addressForm.get('uf');
     }
 
-    onStartDateChange() {
-        this.startDate?.value !== this.today && this.startDate?.patchValue(this.today);
+    async checkAvailability() {
+        const startDateStr = formatDate(this.startDate?.value, 'yyyy-MM-dd', 'pt-BR');
+        const endDateStr = formatDate(this.endDate?.value, 'yyyy-MM-dd', 'pt-BR')
+        const queryParams = `?roomId=${ this.roomId?.value }&startDate=${ startDateStr }&endDate=${ endDateStr }`;
+        const isAvailable = await this.reservationService.isRoomAvailable(queryParams);
+        this.lastCheckAvailable = isAvailable;
+        if (isAvailable) {
+            this.stepper.next();
+        }
     }
 
-    private async checkInvalidForm() {
+    onStartDateChange() {
+        this.data.context === 'checkin' && this.startDate?.patchValue(this.today)
+    }
+
+    dateFilter = (d: Date | null): boolean => {
+        const today = startOfDay(new Date());
+        if (!d) return false;
+        return !isBefore(startOfDay(d), today);
+    };
+
+    private checkInvalidForm() {
         let hasInvalidForm = false;
         if (this.reservationForm.invalid) {
             this.reservationForm.markAllAsTouched();
+            hasInvalidForm = true;
+        }
+
+        if (this.authForm.invalid) {
+            this.authForm.markAllAsTouched();
             hasInvalidForm = true;
         }
 
@@ -230,16 +260,5 @@ export class AddReservationComponent extends ErrorMessengerUtil {
             hasInvalidForm = true;
         }
         return hasInvalidForm;
-    }
-
-    async checkAvailability() {
-        const startDateStr = formatDate(this.startDate?.value, 'yyyy-MM-dd', 'pt-BR');
-        const endDateStr = formatDate(this.endDate?.value, 'yyyy-MM-dd', 'pt-BR')
-        const queryParams = `?roomId=${ this.roomId?.value }&startDate=${ startDateStr }&endDate=${ endDateStr }`;
-        const isAvailable = await this.reservationService.isRoomAvailable(queryParams);
-        this.lastCheckAvailable = isAvailable;
-        if (isAvailable) {
-            this.stepper.next();
-        }
     }
 }

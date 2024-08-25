@@ -10,7 +10,9 @@
 <mat-dialog-content>
     <div class="dialog-content">
         <div class="reservation-title">
-            <p>Quarto: {{ roomId?.value }}</p>
+            @if (roomId?.value) {
+                <p>Quarto: {{ roomId?.value }}</p>
+            }
         </div>
         <mat-stepper #stepper [linear]="true" [headerPosition]="'top'" [labelPosition]="'bottom'">
             <mat-step [stepControl]="reservationForm">
@@ -20,15 +22,14 @@
                         <mat-label>Número do quarto</mat-label>
                         <mat-select [formControlName]="'roomId'">
                             @for (room of roomList$ | async; track room.id) {
-                                <mat-option [value]="room.id">{{ room.id }}</mat-option>
+                                <mat-option [value]="room.id" [disabled]="data.context === 'checkin'">{{ room.id }}</mat-option>
                             }
                         </mat-select>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Qual a data da estadia?</mat-label>
-                        <mat-date-range-input [rangePicker]="picker" [min]="today">
-                            <input matStartDate formControlName="startDate" placeholder="Data de entrada"
-                                   (dateChange)="onStartDateChange()">
+                        <mat-date-range-input [rangePicker]="picker" [dateFilter]="dateFilter">
+                            <input matStartDate formControlName="startDate" placeholder="Data de entrada" (dateChange)="onStartDateChange()">
                             <input matEndDate formControlName="endDate" placeholder="Data de saída">
                         </mat-date-range-input>
                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -36,7 +37,8 @@
                     </mat-form-field>
                     <div class="stepper-btns">
                         <button mat-button (click)="checkAvailability()"
-                                [disabled]="(!roomId?.value || !startDate?.value || !endDate?.value) && !lastCheckAvailable">Próximo
+                                [disabled]="(!roomId?.value || !startDate?.value || !endDate?.value) && !lastCheckAvailable">
+                            Próximo
                         </button>
                     </div>
                 </form>

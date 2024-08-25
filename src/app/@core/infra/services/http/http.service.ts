@@ -13,6 +13,7 @@ import { SignInDto } from "../../../domain/dto/sign-in/sign-in.dto";
 import { CreateReservationDto } from "../../../domain/dto/reservation/create/create-reservation.dto";
 import { Room } from "../../../domain/interface/room.interface";
 import { DashContract } from "../../../domain/type/dash-contract.type";
+import { Reservation } from "../../../domain/interface/reservation.interface";
 
 
 @Injectable({
@@ -91,6 +92,18 @@ export class HttpService extends HttpAdapter {
         const url: string = `${ environment.url }/dash/get-all`;
         return this.send<Result<DashContract>>('get', url, null, Loading.getDash)
             .pipe(map(res => res.data));
+    }
+
+    checkout(id: number) {
+        const url: string = `${ environment.url }/dash/checkout/${id}`;
+        return this.send<Result<boolean>>('put', url, null, Loading.checkout)
+            .pipe(map(res => res.data));
+    }
+
+    async checkin(reservation: Reservation) {
+        const url: string = `${ environment.url }/dash/checkin`;
+        const result = await this.sendAsync<Result<boolean>>('post', url, reservation, Loading.checkin);
+        return result.data;
     }
 
 }

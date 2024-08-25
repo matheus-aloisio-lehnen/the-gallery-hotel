@@ -151,7 +151,9 @@ export class ReservationsComponent extends BaseComponent implements OnInit {
     }
 
     add() {
-        this.dialog.open(AddReservationComponent)
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = {context: 'reservation'}
+        this.dialog.open(AddReservationComponent, dialogConfig)
     }
 
     delete() {

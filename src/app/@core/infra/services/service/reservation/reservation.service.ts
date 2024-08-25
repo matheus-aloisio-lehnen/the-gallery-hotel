@@ -23,12 +23,7 @@ export class ReservationService {
     }
 
     add(createReservationDto: CreateReservationDto) {
-        return this.http.addReservation(createReservationDto)
-            .subscribe(() => {
-                const month = new Date().getMonth() + 1;
-                this.getAllByMonth(month)
-            })
-
+        return this.http.addReservation(createReservationDto);
     }
 
     delete(id: number) {

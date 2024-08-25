@@ -7,5 +7,6 @@ export interface Room {
     price: number,
     description?: string,
     reservations?: Reservation[],
+    reservation?: Reservation,
     dailyStatus: string[]
 }

@@ -11,7 +11,7 @@ export const homeRoutes: Routes = [
             {
                 path: RouteList.dash,
                 loadComponent: () => import('./dash/dash.component')
-                    .then(c => c.DashComponent)
+                    .then(c => c.DashComponent),
             },
             {
                 path: RouteList.rooms,

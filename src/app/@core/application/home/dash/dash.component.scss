@@ -1,17 +1,22 @@
-.cards {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 3rem;
-    justify-content: center;
-    align-items: center;
-}
-
-
 .flex-wrapper {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
     gap: 2rem;
+}
+.room-details {
+    .details-body {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+    }
+    padding: 1rem;
+    .mat-mdc-card-header {
+        margin-bottom: 1.5rem;
+    }
+    .mat-mdc-card-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
 }
